@@ -47,6 +47,11 @@ logDiffBetweenBranches() {
 	git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset  %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative $2..$1
 }
 
+# Get keys from mit liscence keys
+getGPGKey() {
+	gpg --recv-keys --keyserver hkp://pgp.mit.edu $1
+}
+
 parse_git_branch() {
      git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
