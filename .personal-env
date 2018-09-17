@@ -46,3 +46,39 @@ logDiffBetweenBranches() {
 	echo "Showing $2..$1"
 	git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset  %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative $2..$1
 }
+
+parse_git_branch() {
+     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+
+# for regular prompt
+export PS1="\u@\h \[\033[32m\]\w\[\033[33m\]\$(parse_git_branch)\[\033[00m\] $ "
+
+# for python powerline
+# if [ -f `which powerline-daemon` ]; then
+# 	powerline-daemon -q
+# 	POWERLINE_BASH_CONTINUATION=1
+# 	POWERLINE_BASH_SELECT=1
+# 	if [ -f /usr/lib/python3/site-packages/powerline/bindings/bash/powerline.sh ]; then
+# 	    source /usr/lib/python3/site-packages/powerline/bindings/bash/powerline.sh
+# 	fi
+# fi
+
+# for Go powerline
+# function _update_ps1() {
+#     PS1="$(/usr/bin/powerline-go -error $?)"
+# }
+
+# if [ "$TERM" != "linux" ]; then
+#     PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
+# fi
+
+# Unused Aliases
+
+# Interactive operation...
+# alias rm='rm -i'
+# alias cp='cp -i'
+# alias mv='mv -i'
+
+# alias less='less -r'                          # raw control characters
+# alias whence='type -a'                        # where, of a sort
