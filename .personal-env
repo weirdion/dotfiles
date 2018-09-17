@@ -9,3 +9,40 @@ alias grep='grep --color=auto'
 alias removeTrailingWinCrap='sed -i 's/\r$//''
 # list all the packages installed w/o dependencies
 # alias list-all=’pacman -Qet’
+
+# git commands
+
+# stashes the uncommited code, pulls from origin then unstashes
+# Warning if there are conflicts it will not show in interactive UI
+branchUpdate() {
+	stashRunUnstash() {
+		unCommittedChanges="Changes not staged for commit:"
+
+		if git status | grep "$unCommittedChanges" ; then
+			echo -e "\nSaving changes to stash\n" && \
+			git stash save && \
+			echo -e "\nPulling from tracking repo..\n" && \
+			$1 && \
+			echo -e "\nUnstashing changes from stash\n" && \
+			git stash pop
+		else
+			echo -e "\nNo local changes found.." && \
+			echo -e "\nPulling from tracking repo..\n" && \
+			$1
+		fi
+	}
+	stashRunUnstash "git pull --rebase"
+}
+
+gitDiffWithBranch() {
+	currentBranch=$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))
+	git diff HEAD "${1:-$currentBranch}"
+}
+
+logDiffBetweenBranches() {
+	echo "Showing $1..$2"
+	git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset  %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative $1..$2
+	echo
+	echo "Showing $2..$1"
+	git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset  %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative $2..$1
+}
