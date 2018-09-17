@@ -1,0 +1,11 @@
+# Personal aliases and functions
+
+# Displays arch symbol and sys info for terminals
+# alsi
+
+# Aliases
+alias ls='ls -ahl --color=auto'
+alias grep='grep --color=auto'
+alias removeTrailingWinCrap='sed -i 's/\r$//''
+# list all the packages installed w/o dependencies
+# alias list-all=’pacman -Qet’
