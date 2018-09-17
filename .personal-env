@@ -47,6 +47,20 @@ logDiffBetweenBranches() {
 	git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset  %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative $2..$1
 }
 
+handBrakeConvert() {
+	HandBrakeCLI -i "$1" -o "$2" -e x264 -q 21 -B 160
+}
+
+convertAndRmAllInFolder() {
+	for file in $(find "${2:-./}" -type f -name "*.${1:-mkv}"); do \
+		handBrakeConvert "$file" "$(echo "$file" | sed -e 's/\(^.*[sS][0-9][0-9][eE][0-9][0-9]\)\(.*\)/\1/').mp4" && \
+		rm "$file";done
+}
+
+pullSSLCert() {
+	openssl s_client -showcerts -connect "${1}":443 < /dev/null 2> /dev/null | openssl x509 -noout -text
+}
+
 # Get keys from mit liscence keys
 getGPGKey() {
 	gpg --recv-keys --keyserver hkp://pgp.mit.edu $1
