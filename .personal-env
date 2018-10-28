@@ -1,5 +1,9 @@
 # Personal aliases and functions
 
+# if [ -f /etc/profile.d/bash_completion.sh ]; then
+# 	source /etc/profile.d/bash_completion.sh
+# fi
+
 # Displays arch symbol and sys info for terminals
 # alsi
 
@@ -48,13 +52,14 @@ logDiffBetweenBranches() {
 }
 
 handBrakeConvert() {
-	HandBrakeCLI -i "$1" -o "$2" -e x264 -q 21 -B 160
+	HandBrakeCLI -i "$1" -o "${2:-$(echo "$1" | sed -e 's/\(^.*[sS][0-9][0-9][eE][0-9][0-9]\)\(.*\)/\1/').mp4}" -e x264 -q 21 -B 160 && \
+	rm "$1"
 }
 
 convertAndRmAllInFolder() {
-	for file in $(find "${2:-./}" -type f -name "*.${1:-mkv}"); do \
-		handBrakeConvert "$file" "$(echo "$file" | sed -e 's/\(^.*[sS][0-9][0-9][eE][0-9][0-9]\)\(.*\)/\1/').mp4" && \
-		rm "$file";done
+	for file in $(find "${2:-./}" -type f -name "*.${1:-mkv}"); do
+		handBrakeConvert "$file"
+	done
 }
 
 pullSSLCert() {
