@@ -8,8 +8,18 @@
 # alsi
 
 # Aliases
+alias cd..='cd ..' # Because I'm stupid
 alias ls='ls -ahl --color=auto'
 alias grep='grep --color=auto'
+alias untar='tar -zxvf'
+alias wget='wget -c'
+alias generateRandomPassword="openssl rand -base64 19"
+alias ping='ping -c 5'
+alias whatsmyip='curl ipinfo.io/ip'
+alias whatsmyip-local='ipconfig getifaddr en0'
+
+# Probably don't need this, but just because
+alias www='python -m SimpleHTTPServer 8000'
 alias removeTrailingWinCrap='sed -i 's/\r$//''
 # list all the packages installed w/o dependencies
 # alias list-all=’pacman -Qet’
