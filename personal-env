@@ -1,5 +1,15 @@
 basedir=${BASH_SOURCE[0]}
 
+# For bash history
+HISTCONTROL=ignoreboth
+HISTSIZE=10000
+shopt -s histappend
+
+# For Tilix
+if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
+        source /etc/profile.d/vte.sh
+fi
+
 source $basedir.aliases.bash
 source $basedir.functions.bash
 
