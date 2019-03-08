@@ -4,16 +4,31 @@
 alias cd..='cd ..' # Because I'm stupid
 alias ls='ls -ahl --color=auto'
 alias grep='grep --color=auto'
-alias untar='tar -zxvf'
+alias ping='ping -c 5'
+alias vbrc="vim ~/.bashrc"
+
 alias wget='wget -c'
 alias generateRandomPassword="openssl rand -base64 19"
-alias ping='ping -c 5'
+
+# curl
+# follow redirects
+alias curll='curl -L'
+# follow redirects, download as original name, continue
+alias curlloc='curl -L -C - -O'
+# see only response headers from request
+alias curlhead='curl -D - -so /dev/null'
 alias whatsmyip='curl ipinfo.io/ip'
-alias whatsmyip-local='ipconfig getifaddr en0'
+
+# tar
+alias tarup='tar -cvzf'
+alias tardown='tar -zxvf'
+
+# xclip
+alias xcopy="xclip -selection clipboard"
+alias xpaste="xclip -selection clipboard -o"
 
 # Probably don't need this, but just because
 alias removeTrailingWinCrap='sed -i 's/\r$//''
-
 
 # Unused Aliases
 
