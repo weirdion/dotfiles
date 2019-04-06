@@ -45,4 +45,3 @@
     unStageAll = reset -q HEAD
     # Unstage a file
     unStage = reset -q HEAD --
-}
