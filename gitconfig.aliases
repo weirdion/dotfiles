@@ -20,8 +20,12 @@
     branches = branch -a
     # Update local branch, if unstaged changes present, stash pull (with rebase) and unstash
     branchUpdate = ![[ -z $(git status --porcelain -uno) ]] && git pull --rebase || git stash && git pull --rebase && git stash pop
+    # Discard changes to a file
+    discard = checkout --
     # Show information on the remote, if no argument passed use origin
     info  = "!sh -c '[ $# -ne 0 ] && git remote show $1 && exit 0 || [ $# -eq 0 ] && git remote show origin && exit 0' -"
+    # List all files, find the one that matches input
+    find = "!git ls-files | grep -i"
     # Print log in one line graph format
     logOneLine = log --graph --decorate --pretty=oneline --abbrev-commit
     # Print log in one line graph format with all option
@@ -34,6 +38,10 @@
     reflogAbbrev = reflog --abbrev --decorate
     # Show references in abbreviated format
     showRef = show-ref --abbrev
+    # List all the stashes
+    stashes = stash list
     # Reset HEAD and un-stage all staged files
-    unadd = reset HEAD
+    unStageAll = reset -q HEAD
+    # Unstage a file
+    unStage = reset -q HEAD --
     
