@@ -1,0 +1,15 @@
+#
+# Can be added to ~/.gitconfig by doing
+#
+# [include]
+#    path = /path/to/gitconfig.aliases
+#
+# Alternatively,
+# 
+#   git config --global include.path /path/to/gitconfig.aliases
+#
+
+[alias]
+    abort = rebase --abort
+    amend = commit -a --amend
+    
