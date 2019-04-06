@@ -22,11 +22,13 @@ function branchUpdate() {
 	stashRunUnstash "git pull --rebase"
 }
 
+# TODO: This should be moved to git aliases script
 function gitDiffWithBranch() {
 	currentBranch=$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))
 	git diff HEAD "${1:-$currentBranch}"
 }
 
+# TODO: This should be moved to git aliases script
 function logDiffBetweenBranches() {
 	echo "Showing $1..$2"
 	git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset  %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative $1..$2
