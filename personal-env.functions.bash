@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-LBLUE='\033[1;34m'
-NOCOLOR='\033[0m'
+COLOR_RED='\033[0;31m'
+COLOR_GREEN='\033[0;32m'
+COLOR_YELLOW='\033[1;33m'
+COLOR_LBLUE='\033[1;34m'
+COLOR_NONE='\033[0m'
 
 function __checkIfRoot() {
 	if [ $? -ne 0 ]
@@ -23,23 +23,23 @@ function __checkIfNotRoot() {
 }
 
 function __printInColor() {
-	echo -e "$2$1${NOCOLOR}"
+	echo -e "$2$1${COLOR_NONE}"
 }
 
 function __printInRed() {
-	__printInColor $1 $RED
+	__printInColor "$1" $COLOR_RED
 }
 
 function __printInGreen() {
-	__printInColor $1 $GREEN
+	__printInColor "$1" $COLOR_GREEN
 }
 
 function __printInYellow() {
-	__printInColor $1 $YELLOW
+	__printInColor "$1" $COLOR_YELLOW
 }
 
 function __printInBlue() {
-	__printInColor $1 $LBLUE
+	__printInColor "$1" $COLOR_LBLUE
 }
 
 # stashes the uncommited code, pulls from origin then unstashes
