@@ -1,5 +1,47 @@
 #!/usr/bin/env bash
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+LBLUE='\033[1;34m'
+NOCOLOR='\033[0m'
+
+function __checkIfRoot() {
+	if [ $? -ne 0 ]
+	then
+	  echo -e "\nERROR: You must run this command with sudo.";
+	  exit 1;
+	fi
+}
+
+function __checkIfNotRoot() {
+	if [ $? -eq 0 ]
+	then
+	  echo -e "\nERROR: You must NOT use this command as sudo.";
+	  exit 1;
+	fi
+}
+
+function __printInColor() {
+	echo -e "$2$1${NOCOLOR}"
+}
+
+function __printInRed() {
+	__printInColor $1 $RED
+}
+
+function __printInGreen() {
+	__printInColor $1 $GREEN
+}
+
+function __printInYellow() {
+	__printInColor $1 $YELLOW
+}
+
+function __printInBlue() {
+	__printInColor $1 $LBLUE
+}
+
 # stashes the uncommited code, pulls from origin then unstashes
 # Warning if there are conflicts it will not show in interactive UI
 function branchUpdate() {
