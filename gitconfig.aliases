@@ -20,6 +20,7 @@
     branches = branch -a
     # Update local branch, if unstaged changes present, stash pull (with rebase) and unstash
     branchUpdate = ![[ -z $(git status --porcelain -uno) ]] && git pull --rebase || git stash && git pull --rebase && git stash pop
+    diffWithBranch = "!f() { currentBranch=$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD)); git diff HEAD "${1:-$currentBranch}"}; f"
     # Discard changes to a file
     discard = checkout --
     # Show information on the remote, if no argument passed use origin
@@ -44,4 +45,4 @@
     unStageAll = reset -q HEAD
     # Unstage a file
     unStage = reset -q HEAD --
-    
+}
