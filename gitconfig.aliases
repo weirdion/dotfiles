@@ -12,4 +12,13 @@
 [alias]
     abort = rebase --abort
     amend = commit -a --amend
+    branchUpdate = ![[ -z $(git status --porcelain -uno) ]] && git pull --rebase || git stash && git pull --rebase && git stash pop
+    info  = "!sh -c '[ $# -ne 0 ] && git remote show $1 && exit 0 || [ $# -eq 0 ] && git remote show origin && exit 0' -"
+    logOneLine = log --graph --decorate --pretty=oneline --abbrev-commit
+    logOneLineAll = log --graph --decorate --pretty=oneline --abbrev-commit --all
+    logPretty = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+    peeps = !git log --pretty=format:%aN | sort | uniq -c | sort -rn
+    reflogAbbrev = reflog --abbrev --decorate
+    showRef = show-ref --abbrev
+    unadd = reset HEAD
     
