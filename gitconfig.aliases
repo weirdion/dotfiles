@@ -10,15 +10,30 @@
 #
 
 [alias]
+    # Abort rebase
     abort = rebase --abort
+    # List all the aliases
+    aliases = "!git config -l | grep alias | cut -c 7-"
+    # Add all tracked files and amend commit
     amend = commit -a --amend
+    # Lists all branches including remote branches
+    branches = branch -a
+    # Update local branch, if unstaged changes present, stash pull (with rebase) and unstash
     branchUpdate = ![[ -z $(git status --porcelain -uno) ]] && git pull --rebase || git stash && git pull --rebase && git stash pop
+    # Show information on the remote, if no argument passed use origin
     info  = "!sh -c '[ $# -ne 0 ] && git remote show $1 && exit 0 || [ $# -eq 0 ] && git remote show origin && exit 0' -"
+    # Print log in one line graph format
     logOneLine = log --graph --decorate --pretty=oneline --abbrev-commit
+    # Print log in one line graph format with all option
     logOneLineAll = log --graph --decorate --pretty=oneline --abbrev-commit --all
+    # Print log in custom format (close to oneline) along with author and date
     logPretty = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+    # Parse authors in entire log, count for unique and print in desc order of contributions
     peeps = !git log --pretty=format:%aN | sort | uniq -c | sort -rn
+    # Cleaner reflog
     reflogAbbrev = reflog --abbrev --decorate
+    # Show references in abbreviated format
     showRef = show-ref --abbrev
+    # Reset HEAD and un-stage all staged files
     unadd = reset HEAD
     
