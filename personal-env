@@ -3,6 +3,7 @@ basedir=${BASH_SOURCE[0]}
 # For bash history
 HISTCONTROL=ignoreboth
 HISTSIZE=10000
+HISTFILESIZE=10000
 shopt -s histappend
 
 # For Tilix
