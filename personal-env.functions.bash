@@ -8,7 +8,7 @@ COLOR_WHITE='\033[0;37m'
 COLOR_NONE='\033[0m'
 
 function __checkIfRoot() {
-	if [ $? -ne 0 ]
+	if [ "$(id -u)" -ne 0 ]
 	then
 	  echo -e "\nERROR: You must run this command with sudo.";
 	  exit 1;
@@ -16,7 +16,7 @@ function __checkIfRoot() {
 }
 
 function __checkIfNotRoot() {
-	if [ $? -eq 0 ]
+	if [ "$(id -u)" -eq 0 ]
 	then
 	  echo -e "\nERROR: You must NOT use this command as sudo.";
 	  exit 1;
@@ -28,23 +28,23 @@ function __printInColor() {
 }
 
 function __printInRed() {
-	__printInColor "$1" $COLOR_RED
+	__printInColor "$1" "$COLOR_RED"
 }
 
 function __printInGreen() {
-	__printInColor "$1" $COLOR_GREEN
+	__printInColor "$1" "$COLOR_GREEN"
 }
 
 function __printInYellow() {
-	__printInColor "$1" $COLOR_YELLOW
+	__printInColor "$1" "$COLOR_YELLOW"
 }
 
 function __printInBlue() {
-	__printInColor "$1" $COLOR_LBLUE
+	__printInColor "$1" "$COLOR_LBLUE"
 }
 
 function __printInWhite() {
-	__printInColor "$1" $COLOR_WHITE
+	__printInColor "$1" "$COLOR_WHITE"
 }
 
 # stashes the uncommited code, pulls from origin then unstashes
@@ -71,22 +71,23 @@ function branchUpdate() {
 
 # TODO: This should be moved to git aliases script
 function gitDiffWithBranch() {
-	currentBranch=$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))
+	currentBranch=$(git for-each-ref --format='%(upstream:short)' "$(git symbolic-ref -q HEAD)")
 	git diff HEAD "${1:-$currentBranch}"
 }
 
 # TODO: This should be moved to git aliases script
 function logDiffBetweenBranches() {
 	echo "Showing $1..$2"
-	git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset  %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative $1..$2
+	git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset  %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative "$1".."$2"
 	echo
 	echo "Showing $2..$1"
-	git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset  %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative $2..$1
+	git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset  %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative "$2".."$1"
 }
 
 function handBrakeConvert() {
 	if [ "$#" -eq 1 ] || [ "$#" -eq 2 ]
 	then
+		# shellcheck disable=SC2001
 		HandBrakeCLI -i "$1" -o "${2:-$(echo "$1" | sed -e 's/\(^.*[sS][0-9][0-9][eE][0-9][0-9]\)\(.*\)/\1/').mp4}" -e x264 -q 21 -B 160 && \
 		rm "$1"
 	else
@@ -98,6 +99,7 @@ function handBrakeConvert() {
 function convertAndRmAllInFolder() {
 	if [ "$#" -eq 1 ] || [ "$#" -eq 2 ]
 	then
+		# shellcheck disable=SC2044
 		for file in $(find "${1:-./}" -type f -name "*.${2:-*}"); do
 			handBrakeConvert "$file"
 		done
@@ -121,7 +123,7 @@ function pullSSLCert() {
 function getGPGKey() {
 	if [ "$#" -eq 1 ]
 	then
-		gpg --recv-keys --keyserver hkp://pgp.mit.edu $1
+		gpg --recv-keys --keyserver hkp://pgp.mit.edu "$1"
 	else
 		__printInRed "Unable to execute the command."
 		__printInWhite "Usage: getGPGKey keyID"

@@ -28,6 +28,7 @@ alias xcopy="xclip -selection clipboard"
 alias xpaste="xclip -selection clipboard -o"
 
 # Probably don't need this, but just because
+# shellcheck disable=SC1012
 alias removeTrailingWinCrap='sed -i 's/\r$//''
 
 # Unused Aliases
