@@ -140,3 +140,13 @@ function getCertKeyPemFromPfx() {
 		__printInWhite "Usage: getCertKeyPemFromPfx name_of_the_pfx"
 	fi
 }
+
+function stripMetaDataFromVideo() {
+	if [ "$#" -eq 1 ] || [ "$#" -eq 2 ]
+	then
+		ffmpeg -i "$1" -map_metadata -1 -c:v copy -c:a copy "$1-new.${2:-mkv}"
+	else
+		__printInRed "Unable to execute the command"
+		__printInWhite "Usage: stripMetaDataFromVideo videoFile.mkv [mkv/mp4/avi]"
+	fi
+}
