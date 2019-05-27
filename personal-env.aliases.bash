@@ -20,8 +20,8 @@ alias curlhead='curl -D - -so /dev/null'
 alias whatsmyip='curl ipinfo.io/ip'
 
 # tar
-alias tarup='tar -cvzf'
-alias tardown='tar -zxvf'
+alias tarup='tar -I lbzip2 -cvf'
+alias tardown='tar -I lbzip2 -xvf'
 
 # xclip
 alias xcopy="xclip -selection clipboard"
