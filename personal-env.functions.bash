@@ -47,6 +47,10 @@ function __printInWhite() {
 	__printInColor "$1" "$COLOR_WHITE"
 }
 
+function __parse_git_branch() {
+	git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+
 # stashes the uncommited code, pulls from origin then unstashes
 # Warning if there are conflicts it will not show in interactive UI
 function branchUpdate() {
