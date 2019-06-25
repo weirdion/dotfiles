@@ -148,7 +148,9 @@ function getCertKeyPemFromPfx() {
 function stripMetaDataFromVideo() {
 	if [ "$#" -eq 1 ] || [ "$#" -eq 2 ]
 	then
-		ffmpeg -i "$1" -map_metadata -1 -c:v copy -c:a copy "$1-new.${2:-mkv}"
+		local newFileName="$1-new.${2:-mkv}"
+		ffmpeg -i "$1" -map_metadata -1 -c:v copy -c:a copy "$newFileName" && \
+		mv -v "$newFileName" "$1"
 	else
 		__printInRed "Unable to execute the command"
 		__printInWhite "Usage: stripMetaDataFromVideo videoFile.mkv [mkv/mp4/avi]"
