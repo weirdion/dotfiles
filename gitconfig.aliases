@@ -47,3 +47,5 @@
 
     #TODO
     # diffWithBranch = "!f() { currentBranch=$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD)); git diff HEAD "${1:-$currentBranch}"}; f"
+    # TODO 2
+    # rewriteHistory = "filter-branch --tree-filter "sed  -i -e 's/oldWord/newWord/g' fileName" HEAD
