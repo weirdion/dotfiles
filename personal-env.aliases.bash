@@ -6,6 +6,7 @@ alias ls='ls -ahl --color=auto'
 alias grep='grep --color=auto'
 alias ping='ping -c 5'
 alias vbrc="vim ~/.bashrc"
+alias checkOpenPorts="sudo netstat -plnt"
 
 alias wget='wget -c'
 alias generateRandomPassword="openssl rand -base64 19"
