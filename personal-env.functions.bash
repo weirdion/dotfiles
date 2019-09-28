@@ -88,15 +88,14 @@ function logDiffBetweenBranches() {
 	git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset  %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative "$2".."$1"
 }
 
-function handBrakeConvert() {
-	if [ "$#" -eq 1 ] || [ "$#" -eq 2 ]
+function convertToMp4() {
+	if [ "$#" -eq 1 ]
 	then
-		# shellcheck disable=SC2001
-		HandBrakeCLI -i "$1" -o "${2:-$(echo "$1" | sed -e 's/\(^.*[sS][0-9][0-9][eE][0-9][0-9]\)\(.*\)/\1/').mp4}" -e x264 -q 21 -B 160 && \
-		rm "$1"
+		ffmpeg -i "$1" -f mp4 -vcodec libx264 -preset medium -acodec aac "${1%.*}.mp4" -hide_banner && \
+		rm -v "$1"
 	else
 		__printInRed "Unable to execute the command."
-		__printInWhite "Usage: handBrakeConvert source [destination]"
+		__printInWhite "Usage: convertToMp4 source"
 	fi
 }
 
