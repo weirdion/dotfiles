@@ -99,16 +99,14 @@ function convertToMp4() {
 	fi
 }
 
-function convertAndRmAllInFolder() {
-	if [ "$#" -eq 1 ] || [ "$#" -eq 2 ]
-	then
-		# shellcheck disable=SC2044
-		for file in $(find "${1:-./}" -type f -name "*.${2:-*}"); do
-			handBrakeConvert "$file"
-		done
+function convertToMkv() {
+	if [ "$#" -eq 1 ]
+    then
+		ffmpeg -i "$1" -f matroska -vcodec libx264 -preset medium -acodec libvorbis "${1%.*}.mkv" -hide_banner && \
+		rm -v "$1"
 	else
 		__printInRed "Unable to execute the command."
-		__printInWhite "Usage: convertAndRmAllInFolder folder_path [extension_to_convert]"
+		__printInWhite "Usage: convertToMkv source"
 	fi
 }
 
