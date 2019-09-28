@@ -113,6 +113,7 @@ function convertToMkv() {
 function stripMetaDataFromVideo() {
 	if [ "$#" -eq 1 ]
 	then
+		# shellcheck disable=SC2155
 		local extensionName=$(echo "$1" | rev | cut -d '.' -f1 | rev)
 		local newFileName="${1%.*}-new.$extensionName"
 		ffmpeg -i "$1" -map_metadata -1 -c:v copy -c:a copy "$newFileName" -hide_banner && \
