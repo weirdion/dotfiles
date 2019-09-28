@@ -110,6 +110,19 @@ function convertToMkv() {
 	fi
 }
 
+function stripMetaDataFromVideo() {
+	if [ "$#" -eq 1 ]
+	then
+		local extensionName=$(echo "$1" | rev | cut -d '.' -f1 | rev)
+		local newFileName="${1%.*}-new.$extensionName"
+		ffmpeg -i "$1" -map_metadata -1 -c:v copy -c:a copy "$newFileName" -hide_banner && \
+		mv -v "$newFileName" "$1"
+	else
+		__printInRed "Unable to execute the command"
+		__printInWhite "Usage: stripMetaDataFromVideo videoFile.mkv"
+	fi
+}
+
 function pullSSLCert() {
 	if [ "$#" -eq 1 ]
 	then
@@ -139,17 +152,5 @@ function getCertKeyPemFromPfx() {
 	else
 		__printInRed "Unable to execute the command."
 		__printInWhite "Usage: getCertKeyPemFromPfx name_of_the_pfx"
-	fi
-}
-
-function stripMetaDataFromVideo() {
-	if [ "$#" -eq 1 ] || [ "$#" -eq 2 ]
-	then
-		local newFileName="$1-new.${2:-mkv}"
-		ffmpeg -i "$1" -map_metadata -1 -c:v copy -c:a copy "$newFileName" && \
-		mv -v "$newFileName" "$1"
-	else
-		__printInRed "Unable to execute the command"
-		__printInWhite "Usage: stripMetaDataFromVideo videoFile.mkv [mkv/mp4/avi]"
 	fi
 }
