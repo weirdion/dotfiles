@@ -10,6 +10,7 @@ alias checkOpenPorts="sudo netstat -plnt"
 
 alias wget='wget -c'
 alias generateRandomPassword="openssl rand -base64 19"
+alias yayUpdate='yay -Syu --sudoloop --answerclean n --answerdiff a'
 
 # curl
 # follow redirects
