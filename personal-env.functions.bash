@@ -91,8 +91,10 @@ function logDiffBetweenBranches() {
 function convertToMp4() {
 	if [ "$#" -eq 1 ]
 	then
-		ffmpeg -i "$1" -f mp4 -vcodec libx264 -preset medium -acodec aac "${1%.*}.mp4" -hide_banner && \
-		rm -v "$1"
+		local newName="${1%.*}-new.mp4"
+		local finalName="${1%.*}.mp4"
+		ffmpeg -i "$1" -f mp4 -vcodec libx264 -preset medium -acodec aac "$newName" -hide_banner && \
+		rm -v "$1" && mv "$newName" "$finalName"
 	else
 		__printInRed "Unable to execute the command."
 		__printInWhite "Usage: convertToMp4 source"
@@ -102,8 +104,10 @@ function convertToMp4() {
 function convertToMkv() {
 	if [ "$#" -eq 1 ]
     then
-		ffmpeg -i "$1" -f matroska -vcodec libx264 -preset medium -acodec libvorbis "${1%.*}.mkv" -hide_banner && \
-		rm -v "$1"
+		local newName="${1%.*}-new.mkv"
+		local finalName="${1%.*}.mkv"
+		ffmpeg -i "$1" -f matroska -vcodec libx264 -preset medium -acodec libvorbis "$newName" -hide_banner && \
+		rm -v "$1" && mv "$newName" "$finalName"
 	else
 		__printInRed "Unable to execute the command."
 		__printInWhite "Usage: convertToMkv source"
