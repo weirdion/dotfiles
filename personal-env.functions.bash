@@ -159,3 +159,21 @@ function getCertKeyPemFromPfx() {
 		__printInWhite "Usage: getCertKeyPemFromPfx name_of_the_pfx"
 	fi
 }
+
+function sshfs-mount() {
+	if [ "$#" -eq 2 ]; then
+		sshfs -o uid="$(id -u "$LOGNAME")" -o gid="$(id -u "$LOGNAME")" -o reconnect -o  ServerAliveInterval=15 "$1" "$2"
+	else
+		__printInRed "Unable to execute the command."
+		__printInWhite "Usage sshfs-mount [sshfs options] source destination"
+	fi
+}
+
+function sshfs-umount() {
+	if [ "$#" -eq 1 ]; then
+		fusermount3 -u "$1"
+	else
+		__printInRed "Unable to execute the command."
+		__printInWhite "Usage sshfs-umount [fusermount options] destination"
+	fi
+}
