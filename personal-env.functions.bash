@@ -177,3 +177,13 @@ function sshfs-umount() {
 		__printInWhite "Usage sshfs-umount [fusermount options] destination"
 	fi
 }
+
+function sync-folder-local2remote() {
+	if [[ "$#" -eq 2 ]]; then
+		rsync --progress -vr --ignore-existing "$1" "$2$1"
+	else
+		__printInRed "Unable to execute the command."
+		__printInWhite "Usage sync-folder-local2remote local-folder remote:path"
+		__printInWhite "Example: \`sync-folder-local2remote folder1 dummyremote:/home/user/\` will sync local folder1 with dummyremote:/home/user/folder1"
+	fi
+}
