@@ -1,6 +1,6 @@
 basedir=${BASH_SOURCE[0]}
 
-source "$basedir.environement.bash"
+source "$basedir.environment.bash"
 source "$basedir.aliases.bash"
 source "$basedir.functions.bash"
 

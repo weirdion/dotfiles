@@ -1,8 +1,11 @@
 
 # For bash history
-HISTCONTROL=ignoreboth
+
+# Avoid duplicates
+HISTCONTROL=ignoredups:erasedups
 HISTSIZE=10000
-HISTFILESIZE=10000
+HISTFILESIZE="$HISTSIZE"
+# When the shell exits, append to the history file instead of overwriting it
 shopt -s histappend
 
 # For Tilix
@@ -14,3 +17,6 @@ fi
 if [[ -n "$BASH_VERSION" ]]; then
     export PS1="\u@\h \[\033[32m\]\w\[\033[33m\]\$(__parse_git_branch)\[\033[00m\] $ "
 fi
+
+# After each command, append to the history file and reread it
+PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
