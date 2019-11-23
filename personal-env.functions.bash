@@ -93,7 +93,7 @@ function convertToMp4() {
 	then
 		local newName="${1%.*}-new.mp4"
 		local finalName="${1%.*}.mp4"
-		ffmpeg -i "$1" -f mp4 -vcodec libx264 -preset medium -acodec aac "$newName" -hide_banner && \
+		ffmpeg -i "$1" -f mp4 -vcodec libx264 -preset slow -acodec aac "$newName" -hide_banner && \
 		rm -v "$1" && mv "$newName" "$finalName"
 	else
 		__printInRed "Unable to execute the command."
@@ -106,7 +106,7 @@ function convertToMkv() {
     then
 		local newName="${1%.*}-new.mkv"
 		local finalName="${1%.*}.mkv"
-		ffmpeg -i "$1" -f matroska -vcodec libx264 -preset medium -acodec libvorbis "$newName" -hide_banner && \
+		ffmpeg -i "$1" -f matroska -vcodec libx264 -preset slow -acodec libvorbis "$newName" -hide_banner && \
 		rm -v "$1" && mv "$newName" "$finalName"
 	else
 		__printInRed "Unable to execute the command."
@@ -161,7 +161,7 @@ function getCertKeyPemFromPfx() {
 }
 
 function sshfs-mount() {
-	if [ "$#" -eq 2 ]; then
+	if [ "$#" -ge 2 ]; then
 		sshfs -o uid="$(id -u "$LOGNAME")" -o gid="$(id -u "$LOGNAME")" -o reconnect -o  ServerAliveInterval=15 "$1" "$2"
 	else
 		__printInRed "Unable to execute the command."
