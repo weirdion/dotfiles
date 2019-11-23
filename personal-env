@@ -1,8 +1,8 @@
 basedir=${BASH_SOURCE[0]}
 
-source "$basedir.environment.bash"
 source "$basedir.aliases.bash"
 source "$basedir.functions.bash"
+source "$basedir.prompt.bash"
 
 unset basedir
 
