@@ -51,6 +51,15 @@ function __parse_git_branch() {
 	git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
 
+function pidinfo() {
+  if [ "$#" -eq 1 ]; then
+    ps -p "$1" -o pid,user,comm,cmd
+  else
+    __printInRed "Unable to execute the command."
+    __printInWhite "Usage: pidname PID"
+  fi
+}
+
 # stashes the uncommited code, pulls from origin then unstashes
 # Warning if there are conflicts it will not show in interactive UI
 function branchUpdate() {
