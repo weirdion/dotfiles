@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
-source "$(dirname "${BASH_SOURCE[0]}")/personal-env.functions-helpers.bash"
-source "$(dirname "${BASH_SOURCE[0]}")/personal-env.functions-git.bash"
-source "$(dirname "${BASH_SOURCE[0]}")/personal-env.functions-media.bash"
-source "$(dirname "${BASH_SOURCE[0]}")/personal-env.functions-scan.bash"
+for i in $(find $(dirname "${BASH_SOURCE[0]}") -maxdepth 1 -iname "personal-env.functions-*.bash"); do
+	source "$i"
+done
 
 function pidinfo() {
   if [ "$#" -eq 1 ]; then
