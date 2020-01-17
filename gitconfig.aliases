@@ -34,6 +34,8 @@
     logPretty = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
     # Parse authors in entire log, count for unique and print in desc order of contributions
     peeps = !git log --pretty=format:%aN | sort | uniq -c | sort -rn
+    # Parse authors files, and check for lines of code per author, desc order
+    peepsLoC = !git ls-files | xargs -n1 git blame --line-porcelain | sed -n 's/^author //p' | sort -f | uniq -ic | sort -nr
     # Cleaner reflog
     reflogAbbrev = reflog --abbrev --decorate
     # Show references in abbreviated format
