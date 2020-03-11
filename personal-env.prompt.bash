@@ -3,6 +3,7 @@
 
 # Avoid duplicates
 HISTCONTROL=ignoredups:erasedups
+HISTIGNORE="ls:cd:cd -:pwd:exit:date:* --help:* --version"; # Make some commands not show up in history
 HISTSIZE=10000
 HISTFILESIZE="$HISTSIZE"
 # When the shell exits, append to the history file instead of overwriting it
