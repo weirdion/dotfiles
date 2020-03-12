@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # shellcheck disable=SC2044
-for i in $(find "$(dirname "${BASH_SOURCE[0]}")" -maxdepth 1 -iname "personal-env.functions-*.bash"); do
+for i in $(find "$(dirname "${BASH_SOURCE[0]:-$0}")" -maxdepth 1 -iname "personal-env.functions-*.bash"); do
 	source "$i"
 done
 

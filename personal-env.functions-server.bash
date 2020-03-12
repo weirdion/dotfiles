@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "${BASH_SOURCE[0]}")/personal-env.functions-helpers.bash"
+source "$(dirname "${BASH_SOURCE[0]:-$0}")/personal-env.functions-helpers.bash"
 
 function pullSSLCert() {
 	if [ "$#" -eq 1 ]

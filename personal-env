@@ -1,8 +1,10 @@
-basedir=${BASH_SOURCE[0]}
+basedir=${BASH_SOURCE[0]:-$0}
 
 source "$basedir.aliases.bash"
 source "$basedir.functions.bash"
-source "$basedir.prompt.bash"
+if [ -z "${SHELL}" ] && [ "${SHELL}" == "/usr/bin/bash" ]; then
+    source "$basedir.prompt.bash"
+fi
 
 unset basedir
 
