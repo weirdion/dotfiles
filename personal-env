@@ -2,7 +2,7 @@ basedir=${BASH_SOURCE[0]:-$0}
 
 source "$basedir.aliases.bash"
 source "$basedir.functions.bash"
-if [ -z "${SHELL}" ] && [ "${SHELL}" == "/usr/bin/bash" ]; then
+if [ -z "${SHELL}" ] && [ "${SHELL}" == $(which bash) ]; then
     source "$basedir.prompt.bash"
 fi
 
