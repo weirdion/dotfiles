@@ -12,10 +12,10 @@ filetype plugin indent on
 syntax on
 
 " Global tab width.
-set tabstop=2
-set shiftwidth=2
-set softtabstop=2
-set expandtab
+set tabstop=4  " width of t a tab
+set shiftwidth=4  " indents width
+set softtabstop=4  " number of columns for a tab
+set expandtab  " expand tab into spaces
 
 " Set to show invisibles (tabs & trailing spaces) & their highlight color
 set list listchars=tab:»\ ,trail:·
