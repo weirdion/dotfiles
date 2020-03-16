@@ -23,3 +23,5 @@ set list listchars=tab:»\ ,trail:·
 " Configure spell checking
 set spelllang=en_us
 
+" Specific file-type overrides
+autocmd BufRead,BufNewFile *.yml,*.yaml setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
