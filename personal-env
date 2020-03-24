@@ -3,7 +3,7 @@ basedir=${BASH_SOURCE[0]:-$0}
 source "$basedir.aliases.bash"
 source "$basedir.functions.bash"
 
-[[ "${SHELL}" == "/bin/bash" || "${SHELL}" == "$(which bash)" ]] && source "$basedir.prompt.bash"
+[[ "${SHELL}" == "/bin/bash" || "${SHELL}" == "$(command -v bash)" ]] && source "$basedir.prompt.bash"
 
 unset basedir
 
