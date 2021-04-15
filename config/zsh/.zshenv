@@ -73,3 +73,7 @@ export PATH=$HOME/bin:$HOME/.local/bin:$DOTFILES_DIR/bin:/usr/local/bin:$PATH
 [ -d "$HOME/.toolbox" ] && export PATH=$HOME/.toolbox/bin:$PATH
 # pyenv
 [ -d "$PYENV_ROOT" ] && export PATH="$PYENV_ROOT/bin:$PATH"
+# nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
