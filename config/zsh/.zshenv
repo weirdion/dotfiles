@@ -28,7 +28,8 @@ export HISTSIZE=8000
 export SAVEHIST=8000
 
 # Path to your oh-my-zsh installation.
-export ZSH="${HOME}/.oh-my-zsh"
+[ -d /usr/share/oh-my-zsh ] && export ZSH="/usr/share/oh-my-zsh"
+[ -d ${HOME}/.oh-my-zsh ] && export ZSH="${HOME}/.oh-my-zsh"
 
 # git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME/.oh-my-zsh/custom/themes/powerlevel10k
 export ZSH_THEME="powerlevel10k/powerlevel10k"
