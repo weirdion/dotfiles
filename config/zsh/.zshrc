@@ -18,7 +18,7 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 
 # personal configs
 source "$DOTFILES_DIR/config/shell_common/aliases.sh"
-source "$DOTFILES_DIR/config/shell_common/helpers.bash"
+source "$DOTFILES_DIR/config/shell_common/functions.bash"
 
 if [ $machine == "Darwin" ]; then
   source "$DOTFILES_DIR/config/shell_common/darwin.aliases.sh"
