@@ -1,0 +1,18 @@
+#!/usr/bin/env zsh
+
+# stashes the uncommited code, pulls from origin then unstashes
+# Warning if there are conflicts it will not show in interactive UI
+unCommittedChanges="Changes not staged for commit:"
+
+if git status | grep "$unCommittedChanges" ; then
+	print -P "%B%F{yellow}\nSaving changes to stash\n%f%b" && \
+	git stash save && \
+	print -P "%B%F{yellow}\nPulling from tracking repo..\n%f%b" && \
+	git pull --rebase && \
+	print -P "%B%F{yellow}\nUnstashing changes from stash\n%f%b" && \
+	git stash pop
+else
+	print -P "%B%F{green}\nNo local changes found..%f%b" && \
+	print -P "%B%F{green}\nPulling from tracking repo..\n%f%b" && \
+	git pull --rebase
+fi
