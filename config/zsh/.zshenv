@@ -2,18 +2,35 @@
 
 # env
 
+# Machine based options
+case "$(uname -s)" in
+	Linux*)
+		machine=Linux
+	;;
+	Darwin*)
+		machine=Darwin
+	;;
+	# Windows git prompt
+	MINGW*)
+		machine=MinGw
+	;;
+	*)
+		machine="UNKNOWN:$(uname -s)"
+	;;
+esac
+
+export DOTFILES_DIR="~/workspace/dotfiles"
+
+# zsh history control
+HISTFILE=~/.zsh_history
+HISTSIZE=8000
+SAVEHIST=8000
+
 # Path to your oh-my-zsh installation.
 export ZSH="~/.oh-my-zsh"
 
 # git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME/.oh-my-zsh/custom/themes/powerlevel10k
 ZSH_THEME="powerlevel10k/powerlevel10k"
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
 # DISABLE_AUTO_UPDATE="true"
@@ -26,15 +43,6 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Uncomment the following line if pasting URLs and other text is messed up.
 # DISABLE_MAGIC_FUNCTIONS="true"
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
 # COMPLETION_WAITING_DOTS="true"
@@ -62,6 +70,6 @@ export PYENV_ROOT="$HOME/.pyenv"
 # local bin
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 # toolbox
-export PATH=$HOME/.toolbox/bin:$PATH
+[ -d "$HOME/.toolbox" ] && export PATH=$HOME/.toolbox/bin:$PATH
 # pyenv
-export PATH="$PYENV_ROOT/bin:$PATH"
+[ -d "$PYENV_ROOT" ] && export PATH="$PYENV_ROOT/bin:$PATH"
