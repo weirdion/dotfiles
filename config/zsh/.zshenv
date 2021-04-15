@@ -19,18 +19,19 @@ case "$(uname -s)" in
 	;;
 esac
 
+export machine
 export DOTFILES_DIR="${HOME}/workspace/dotfiles"
 
 # zsh history control
-HISTFILE=~/.zsh_history
-HISTSIZE=8000
-SAVEHIST=8000
+export HISTFILE=$HOME/.zsh_history
+export HISTSIZE=8000
+export SAVEHIST=8000
 
 # Path to your oh-my-zsh installation.
-export ZSH="~/.oh-my-zsh"
+export ZSH="${HOME}/.oh-my-zsh"
 
 # git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME/.oh-my-zsh/custom/themes/powerlevel10k
-ZSH_THEME="powerlevel10k/powerlevel10k"
+export ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
 # DISABLE_AUTO_UPDATE="true"
@@ -75,5 +76,3 @@ export PATH=$HOME/bin:$HOME/.local/bin:$DOTFILES_DIR/bin:/usr/local/bin:$PATH
 [ -d "$PYENV_ROOT" ] && export PATH="$PYENV_ROOT/bin:$PATH"
 # nvm
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
