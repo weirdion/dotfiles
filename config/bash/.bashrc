@@ -25,16 +25,15 @@ case "$(uname -s)" in
 	;;
 esac
 
-DOTFILES_DIR="~/workspace/dotfiles"
+DOTFILES_DIR="$HOME/workspace/dotfiles"
 
 # User specific environment
 
 export PYENV_ROOT="$HOME/.pyenv"
 
-if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:$DOTFILES_DIR/bin:" ]]
 then
-    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
-    export PATH
+    export PATH="$HOME/.local/bin:$HOME/bin:$DOTFILES_DIR/bin:$PATH"
 fi
 
 # toolbox
@@ -62,6 +61,9 @@ if [ "$TILIX_ID" ] || [ "$VTE_VERSION" ]; then
 fi
 
 # for regular prompt
+function __parse_git_branch() {
+	git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
 if [[ -n "$BASH_VERSION" ]]; then
     export PS1="\u@\h \[\033[32m\]\w\[\033[33m\]\$(__parse_git_branch)\[\033[00m\] $ "
 fi

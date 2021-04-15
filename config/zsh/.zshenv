@@ -19,7 +19,7 @@ case "$(uname -s)" in
 	;;
 esac
 
-export DOTFILES_DIR="~/workspace/dotfiles"
+export DOTFILES_DIR="${HOME}/workspace/dotfiles"
 
 # zsh history control
 HISTFILE=~/.zsh_history
@@ -68,7 +68,7 @@ export PYENV_ROOT="$HOME/.pyenv"
 # PATH
 
 # local bin
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:$HOME/.local/bin:$DOTFILES_DIR/bin:/usr/local/bin:$PATH
 # toolbox
 [ -d "$HOME/.toolbox" ] && export PATH=$HOME/.toolbox/bin:$PATH
 # pyenv
