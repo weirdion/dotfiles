@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+function _convertToMkv() {
+    local newName="${1%.*}-new.mkv"
+    local finalName="${1%.*}.mkv"
+    ffmpeg -i "$1" -f matroska -vcodec libx264 -preset slow -acodec libvorbis "$newName" -hide_banner && \
+    rm -v "$1" && mv "$newName" "$finalName"
+}
+
+if [ "$#" -eq 1 ]; then
+    _convertToMkv "$1"
+elif [ "$#" -gt 1 ]; then
+    for f in "$@"; do
+        echo "\n*** Processing $f ***\n"
+        _convertToMkv "$f"
+else
+    echo -e  "\033[0;31mUnable to execute the command.\033[0m"
+    echo -e  "\033[0;37mUsage: convertToMkv source\033[0m"
+fi

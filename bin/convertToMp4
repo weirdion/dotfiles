@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+function _convertToMp4() {
+    local newName="${1%.*}-new.mp4"
+    local finalName="${1%.*}.mp4"
+    ffmpeg -i "$1" -f mp4 -vcodec libx264 -preset slow -acodec aac "$newName" -hide_banner && \
+    rm -v "$1" && mv "$newName" "$finalName"
+}
+
+if [ "$#" -eq 1 ]; then
+    _convertToMp4 "$1"
+elif [ "$#" -gt 1 ]; then
+    for f in "$@"; do
+        echo "\n*** Processing $f ***\n"
+        _convertToMp4 "$f"
+else
+    echo -e  "\033[0;31mUnable to execute the command.\033[0m"
+    echo -e  "\033[0;37mUsage: convertToMp4 source\033[0m"
+fi

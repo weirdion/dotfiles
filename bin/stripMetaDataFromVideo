@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+function _stripMetaDataFromVideo() {
+    # shellcheck disable=SC2155
+    local extensionName=$(echo "$1" | rev | cut -d '.' -f1 | rev)
+    local newFileName="${1%.*}-new.$extensionName"
+    ffmpeg -i "$1" -map_metadata -1 -c:v copy -c:a copy "$newFileName" -hide_banner && \
+    mv -v "$newFileName" "$1"
+}
+
+if [ "$#" -eq 1 ]; then
+    _stripMetaDataFromVideo "$1"
+elif [ "$#" -gt 1 ]; then
+    for f in "$@"; do
+        echo "\n*** Processing $f ***\n"
+        _stripMetaDataFromVideo "$f"
+else
+    echo -e  "\033[0;31mUnable to execute the command.\033[0m"
+    echo -e  "\033[0;37mUsage: stripMetaDataFromVideo videoFile.mkv\033[0m"
+fi
