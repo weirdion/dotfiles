@@ -1,16 +1,12 @@
 image: archlinux:base-devel
 
 stages:
-    - init
     - analysis
-
-initialize:
-    stage: init
-    script:
-        - pacman -Sy
-        - pacman --noconfirm -S shellcheck
 
 shellcheck:
     stage: analysis
+    before_script:
+        - pacman -Sy
+        - pacman --noconfirm --quiet -S shellcheck
     script:
         - ./test/shellcheck-run.sh
