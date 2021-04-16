@@ -7,6 +7,7 @@ shellcheck:
     stage: check
     before_script:
         - pacman -Sy
+        - pacman --noconfirm -Sw glibc
         - pacman --noconfirm -S shellcheck
     script:
         - ./test/shellcheck-run.sh

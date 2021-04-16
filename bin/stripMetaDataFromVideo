@@ -12,8 +12,9 @@ if [ "$#" -eq 1 ]; then
     _stripMetaDataFromVideo "$1"
 elif [ "$#" -gt 1 ]; then
     for f in "$@"; do
-        echo "\n*** Processing $f ***\n"
+        echo "*** Processing $f ***"
         _stripMetaDataFromVideo "$f"
+    done
 else
     echo -e  "\033[0;31mUnable to execute the command.\033[0m"
     echo -e  "\033[0;37mUsage: stripMetaDataFromVideo videoFile.mkv\033[0m"

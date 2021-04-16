@@ -11,8 +11,9 @@ if [ "$#" -eq 1 ]; then
     _convertToMkv "$1"
 elif [ "$#" -gt 1 ]; then
     for f in "$@"; do
-        echo "\n*** Processing $f ***\n"
+        echo "*** Processing $f ***"
         _convertToMkv "$f"
+    done
 else
     echo -e  "\033[0;31mUnable to execute the command.\033[0m"
     echo -e  "\033[0;37mUsage: convertToMkv source\033[0m"

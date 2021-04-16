@@ -31,7 +31,7 @@ DOTFILES_DIR="$HOME/workspace/dotfiles"
 
 export PYENV_ROOT="$HOME/.pyenv"
 
-if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:$DOTFILES_DIR/bin:" ]]
+if ! [[ "$PATH" =~ ${HOME}/.local/bin:${HOME}/bin:${DOTFILES_DIR}/bin: ]]
 then
     export PATH="$HOME/.local/bin:$HOME/bin:$DOTFILES_DIR/bin:$PATH"
 fi

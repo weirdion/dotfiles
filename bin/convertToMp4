@@ -11,8 +11,9 @@ if [ "$#" -eq 1 ]; then
     _convertToMp4 "$1"
 elif [ "$#" -gt 1 ]; then
     for f in "$@"; do
-        echo "\n*** Processing $f ***\n"
+        echo "*** Processing $f ***"
         _convertToMp4 "$f"
+    done
 else
     echo -e  "\033[0;31mUnable to execute the command.\033[0m"
     echo -e  "\033[0;37mUsage: convertToMp4 source\033[0m"
