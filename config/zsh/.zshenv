@@ -2,30 +2,10 @@
 
 # env
 
-# Machine based options
-case "$(uname -s)" in
-	Linux*)
-		machine=Linux
-	;;
-	Darwin*)
-		machine=Darwin
-	;;
-	# Windows git prompt
-	MINGW*)
-		machine=MinGw
-	;;
-	*)
-		machine="UNKNOWN:$(uname -s)"
-	;;
-esac
-
-export machine
-export DOTFILES_DIR="${HOME}/workspace/dotfiles"
-
 # zsh history control
 export HISTFILE=$HOME/.zsh_history
-export HISTSIZE=8000
-export SAVEHIST=8000
+export HISTSIZE=10000
+export SAVEHIST=$HISTSIZE
 
 # Path to your oh-my-zsh installation.
 [ -d /usr/share/oh-my-zsh ] && export ZSH="/usr/share/oh-my-zsh"
@@ -49,7 +29,7 @@ export ZSH_THEME="powerlevel10k/powerlevel10k"
 # DISABLE_MAGIC_FUNCTIONS="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
@@ -63,22 +43,3 @@ export ZSH_THEME="powerlevel10k/powerlevel10k"
 # or set a custom format using the strftime function format specifications,
 # see 'man strftime' for details.
 # HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-export PYENV_ROOT="$HOME/.pyenv"
-
-# PATH
-
-# local bin
-typeset -U PATH path
-path=($HOME/bin $HOME/.local/bin $DOTFILES_DIR/bin "$path[@]")
-export PATH
-
-# toolbox
-[ -d "$HOME/.toolbox" ] && export PATH=$HOME/.toolbox/bin:$PATH
-# pyenv
-[ -d "$PYENV_ROOT" ] && export PATH="$PYENV_ROOT/bin:$PATH"
-# nvm
-export NVM_DIR="$HOME/.nvm"

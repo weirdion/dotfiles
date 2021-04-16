@@ -21,33 +21,20 @@ compinit
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
   git
-)
+ )
 
 source $ZSH/oh-my-zsh.sh
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 # personal configs
-source "$DOTFILES_DIR/config/shell_common/aliases.sh"
-source "$DOTFILES_DIR/config/shell_common/functions.bash"
+export DOTFILES_DIR="$HOME/workspace/dotfiles"
+source "$DOTFILES_DIR/config/shell_common/env.sh"
 
-if [ $machine = "Darwin" ]; then
+if [ "$MACHINE" = "Darwin" ]; then
   source "$DOTFILES_DIR/config/shell_common/darwin.aliases.sh"
 else
   source "$DOTFILES_DIR/config/shell_common/linux.aliases.sh"
-fi
-
-
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-# For Tilix
-if [ "$TILIX_ID" ] || [ "$VTE_VERSION" ]; then
-    source /etc/profile.d/vte.sh
-fi
-
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
 fi
 
 [ -f $HOME/.p10k.zsh ] && source $HOME/.p10k.zsh
