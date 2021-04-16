@@ -31,7 +31,9 @@ export SAVEHIST=8000
 [ -d /usr/share/oh-my-zsh ] && export ZSH="/usr/share/oh-my-zsh"
 [ -d ${HOME}/.oh-my-zsh ] && export ZSH="${HOME}/.oh-my-zsh"
 
-# git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME/.oh-my-zsh/custom/themes/powerlevel10k
+[ $(sed -n 's/^ID=//p' /etc/os-release) = "arch" ] && export ZSH_CUSTOM=/usr/share/oh-my-zsh/custom
+
+# for mac: git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME/.oh-my-zsh/custom/themes/powerlevel10k
 export ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
@@ -70,7 +72,10 @@ export PYENV_ROOT="$HOME/.pyenv"
 # PATH
 
 # local bin
-export PATH=$HOME/bin:$HOME/.local/bin:$DOTFILES_DIR/bin:/usr/local/bin:$PATH
+typeset -U PATH path
+path=($HOME/bin $HOME/.local/bin $DOTFILES_DIR/bin "$path[@]")
+export PATH
+
 # toolbox
 [ -d "$HOME/.toolbox" ] && export PATH=$HOME/.toolbox/bin:$PATH
 # pyenv
