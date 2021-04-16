@@ -1,21 +1,19 @@
-#!/usr/bin/env bash
-
 # Aliases
 alias cd..='cd ..' # Because I'm stupid
-alias ls='ls -ahl --color=auto'
-alias grep='grep --color=auto'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ~='cd ~'
+
 alias ping='ping -c 5'
-alias vbrc="vim ~/.bashrc"
 alias checkOpenPorts="netstat -tlpn"
 
 alias wget='wget -c'
 alias generateRandomPassword="openssl rand -base64 19"
-alias yayUpdate='yay -Syu --sudoloop --answerclean n --answerdiff a'
 alias dockerRemoveAllImages='docker rmi -f $(docker images -a -q)'
 
 # curl
 # follow redirects
-alias curll='curl -L'
+alias curl='curl -L'
 # follow redirects, download as original name, continue
 alias curlloc='curl -L -C - -O'
 # see only response headers from request
@@ -26,23 +24,13 @@ alias whatsmyip='curl ipinfo.io/ip'
 alias tarup='tar -I lbzip2 -cvf'
 alias tardown='tar -I lbzip2 -xvf'
 
-# xclip
-alias xcopy="xclip -selection clipboard"
-alias xpaste="xclip -selection clipboard -o"
-
 # Probably don't need this, but just because
 # shellcheck disable=SC1012
-alias removeTrailingWinCrap='sed -i 's/\r$//''
+alias removeTrailingWinCrap="sed -i 's/\r$//'"
 
 # Unused Aliases
-
-# list all the packages installed w/o dependencies
-# alias list-all=’pacman -Qet’
 
 # Interactive operation...
 # alias rm='rm -i'
 # alias cp='cp -i'
 # alias mv='mv -i'
-
-# alias less='less -r'                          # raw control characters
-# alias whence='type -a'                        # where, of a sort
