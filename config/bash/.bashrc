@@ -50,7 +50,7 @@ export NVM_DIR="$HOME/.nvm"
 source "$DOTFILES_DIR/config/shell_common/aliases.sh"
 source "$DOTFILES_DIR/config/shell_common/functions.bash"
 
-if [ $machine == "Darwin" ]; then
+if [ "$machine" == "Darwin" ]; then
   source "$DOTFILES_DIR/config/shell_common/darwin.aliases.sh"
 else
   source "$DOTFILES_DIR/config/shell_common/linux.aliases.sh"
