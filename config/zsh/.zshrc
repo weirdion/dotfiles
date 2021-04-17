@@ -21,7 +21,12 @@ compinit
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
   git
- )
+)
+  
+# TODO: #5: enable this after install script
+# zsh-history-substring-search
+# zsh-autosuggestions
+# zsh-syntax-highlighting
 
 source $ZSH/oh-my-zsh.sh
 
