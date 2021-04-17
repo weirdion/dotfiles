@@ -19,3 +19,7 @@ if [ "$TILIX_ID" ] || [ "$VTE_VERSION" ]; then
     source /etc/profile.d/vte.sh
 fi
 
+# Mac only path_helper
+if [[ -x /usr/libexec/path_helper ]]; then
+  eval $(/usr/libexec/path_helper -s)
+fi

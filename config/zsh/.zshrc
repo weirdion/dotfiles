@@ -22,7 +22,7 @@ compinit
 plugins=(
   git
 )
-  
+
 # TODO: #5: enable this after install script
 # zsh-history-substring-search
 # zsh-autosuggestions
