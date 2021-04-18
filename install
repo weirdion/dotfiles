@@ -1,0 +1,195 @@
+#!/usr/bin/env python3
+
+import logging
+import os
+import sys
+
+from subprocess import run
+
+COLOR_BLUE = "\033[94m"
+COLOR_RED = "\033[31m"
+COLOR_GREEN = "\033[32m"
+COLOR_NONE = "\033[00m"
+
+# Use environ instead of getenv since we want it to fail if var not found
+HOME_DIR = os.environ["HOME"]
+ZSH_DIR = os.path.join(HOME_DIR, ".oh-my-zsh")
+ZSH_THEME_DIR = os.path.join(ZSH_DIR, "custom/themes")
+ZSH_PLUGIN_DIR = os.path.join(ZSH_DIR, "custom/plugins")
+
+
+install_check_files = [
+    os.path.join(HOME_DIR, ".bashrc"),
+    os.path.join(HOME_DIR, ".vimrc"),
+    os.path.join(HOME_DIR, ".zshrc"),
+    os.path.join(HOME_DIR, ".zshenv")
+]
+
+directories_to_install = [
+    "bin"
+]
+
+logger = logging.getLogger("dotfiles_install")
+handler = logging.StreamHandler(stream=sys.stdout)
+handler.setLevel(logging.INFO)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
+
+def __create_symlink(source, destination):
+    """
+    Function that creates a symlink from source to destination.
+    :param source: source file or directory that needs to be linked.
+    :param destination: destination file or directory where the link will be made.
+    """
+    err_msg = None
+    try:
+        os.symlink(source, destination)
+        logger.info(f"Symlink {destination} -> {source}")
+        symlink_success = True
+    except OSError as err:
+        err_msg = f'Failed to create symlink from src: {source} dest: {destination}. Reason: {err}'
+        symlink_success = False
+
+    return (symlink_success, err_msg)
+
+
+def __prompt_user_yes_no(question: str) -> bool:
+    """
+    Function that prompts user the question from the argument for a Yes/No answer.
+    :param question: str, question the user will be prompted for.
+    :return: bool, True if user answers Yes, False otherwise.
+    """
+    while (answer := input(f"{question} (y/n): ").lower()) not in {"y", "yes", "n", "no"}:
+        print("Invalid input.")
+
+    if answer[0] == "y":
+        return True
+
+    return False
+
+
+def check_if_dest_exists():
+    """
+    Function that checks if any of the files from install_check_files exists,
+    or if any of the directories from directories_to_install exists, and moves them using `.backup` suffix.
+    """
+    for d in directories_to_install:
+        abs_path_d = os.path.join(HOME_DIR, d)
+        if os.path.isdir(abs_path_d):
+            logger.info(f"Directory {abs_path_d} found, backing up")
+            os.rename(abs_path_d, f"{abs_path_d}.backup")
+    
+    for f in install_check_files:
+        if os.path.isfile(f):
+            logger.info(f"File {f} found, backing up")
+            os.rename(f, f"{f}.backup")
+
+
+def do_setup_zsh():
+    """
+    Function to clone oh-my-zsh to $HOME/.oh-my-zsh
+    Clone powerlevel10k theme to ZSH_CUSTOM/custom/themes
+    Clone zsh-autosuggestions, zsh-completions, zsh-history-substring-search, zsh-syntax-highlighting in ZSH_CUSTOM/custom/plugins
+    """
+    if not os.path.isdir(ZSH_DIR):
+        run(f"git clone https://github.com/ohmyzsh/ohmyzsh.git --depth 5 --single-branch {ZSH_DIR}".split())
+    
+    for plugin in ["zsh-autosuggestions", "zsh-completions", "zsh-history-substring-search", "zsh-syntax-highlighting"]:
+        if not os.path.isdir(f"{ZSH_PLUGIN_DIR}/{plugin}"):
+            run(f"git clone https://github.com/zsh-users/{plugin}.git --depth 5 --single-branch {ZSH_PLUGIN_DIR}/{plugin}".split())
+    
+    if not os.path.isdir(f"{ZSH_THEME_DIR}/powerlevel10k"):
+        run(f"git clone https://github.com/romkatv/powerlevel10k.git --depth 5 --single-branch {ZSH_THEME_DIR}/powerlevel10k".split())
+
+
+def do_symlinks():
+    """
+    Function that performs all the needed symlinks for files and directories.
+    """
+    current_dir = os.getcwd()
+
+    for d in directories_to_install:
+        __create_symlink(os.path.join(current_dir, d), os.path.join(HOME_DIR, d))
+    
+    install_file_dict = {
+        "config/bash/.bashrc": ".bashrc",
+        "config/zsh/.zshenv": ".zshenv",
+        "config/zsh/.zshrc": ".zshrc",
+        "config/.vimrc": ".vimrc",
+    }
+    for source, dest in install_file_dict.items():
+        __create_symlink(os.path.join(current_dir, source), os.path.join(HOME_DIR, dest))
+
+    p10k_file = os.path.join(HOME_DIR, ".p10k.zsh")
+    install_p10k = True
+    if os.path.isfile(p10k_file):
+        response = __prompt_user_yes_no(f"Config {p10k_file} found, do you want to replace it?")
+        if response:
+            os.rename(p10k_file, f"{p10k_file}.backup")
+        else:
+            install_p10k = False
+            logger.info("Skipping .p10k.zsh, file already exists and wasn't replaced.")
+    
+    if install_p10k:
+        while (answer := input(f"""Powerlevel10k options,
+            \n    1) lean
+            \n    2) pretty
+            \n(1/2): """).lower()) not in {"1", "2"}: print("Invalid input.")
+        
+        if answer[0] == "1":
+            __create_symlink(os.path.join(current_dir, "config/zsh/.p10k-lean.zsh"), os.path.join(HOME_DIR, ".p10k.zsh"))
+        else:
+            __create_symlink(os.path.join(current_dir, "config/zsh/.p10k-pretty.zsh"), os.path.join(HOME_DIR, ".p10k.zsh"))
+
+
+def configure_git():
+    """
+    Function that configures git.
+    Some things like name are hardcoded, but sensitive things like email are prompted.
+    While GPG key is needed, it is not configured here intentionally.
+    """
+    gitconfig_file = os.path.join(HOME_DIR, ".gitconfig")
+    configure_git_config = True
+    if os.path.isfile(gitconfig_file):
+        response = __prompt_user_yes_no(f"Config {gitconfig_file} found, do you want to overwrite it?")
+        if response:
+            os.rename(gitconfig_file, f"{gitconfig_file}.backup")
+        else:
+            configure_git_config = False
+            logger.info("Skipping .gitconfig, file already exists and wasn't replaced.")
+    
+    if configure_git_config:
+        run("git config --global user.name Ankit Sadana".split())
+        
+        run("git config --global http.sslVerify true".split())
+        run("git config --global core.editor vim".split())
+        run("git config --global init.defaultBranch main".split())
+        
+        run("git config --global gpg.program gpg2".split())
+        run("git config --global commit.gpgsign true".split())
+
+        email = input("Enter your git associated email: ")
+        run(f"git config --global user.email {email}".split())
+
+
+def main():
+    """
+    Function that does all the orchestration between functions.
+    TODO: Configure this into a menu, with auto option to go through expected flow.
+    """
+    logger.info("Checking existing files and directories")
+    check_if_dest_exists()
+
+    logger.info("Setting up oh-my-zsh, plugins and themes")
+    do_setup_zsh()
+
+    logger.info("Creating symlinks")
+    do_symlinks()
+
+    logger.info("Configuring git-config")
+    configure_git()
+
+
+if __name__ == "__main__":
+    main()
