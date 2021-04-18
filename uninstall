@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+
+import logging
+import os
+import shutil
+import sys
+
+
+HOME_DIR = os.environ["HOME"]
+ZSH_DIR = os.path.join(HOME_DIR, ".oh-my-zsh")
+
+logger = logging.getLogger("dotfiles_install")
+handler = logging.StreamHandler(stream=sys.stdout)
+handler.setLevel(logging.INFO)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
+symlinks_to_unlink = [
+    os.path.join(HOME_DIR, ".bashrc"),
+    os.path.join(HOME_DIR, ".vimrc"),
+    os.path.join(HOME_DIR, ".p10k.zsh"),
+    os.path.join(HOME_DIR, ".zshenv"),
+    os.path.join(HOME_DIR, ".zshrc"),
+    os.path.join(HOME_DIR, "bin")
+]
+
+files_to_delete = [
+    os.path.join(HOME_DIR, ".gitconfig")
+]
+
+directories_to_delete = [
+    os.path.join(HOME_DIR, ".oh-my-zsh")
+]
+
+
+def __remove_symlink(link: str):
+    """
+    Function that removes the symlink
+    :param link: Link path to unlink.
+    """
+    if os.path.islink(link):
+        logger.info(f"Unlinking {link}.")
+        try:
+            os.unlink(link)
+        except OSError as err:
+            logger.error(f"Failed to unlink {link}. Reason: {err}")
+    else:
+        logger.warning(f"{link} is not a symlink.")
+
+
+def cleanup_symlinks():
+    """
+    Function that cleans up the symlinks.
+    """
+    for link in symlinks_to_unlink:
+        __remove_symlink(link)
+
+
+def cleanup_files_and_dir():
+    """
+    Function that cleans up files and directories
+    """
+    for f in files_to_delete:
+        if os.path.isfile(f):
+            logger.info(f"Removing file {f}")
+            os.remove(f)
+        else:
+            logger.warning(f"File {f} does not exist.")
+
+    for d in directories_to_delete:
+        if os.path.isdir(d):
+            logger.info(f"Removing directory {d}")
+            shutil.rmtree(d)
+        else:
+            logger.warning(f"Directory {d} does not exist.")
+
+
+def main():
+    """
+    Function that does all the orchestration between functions.
+    TODO: Configure this into a menu, with auto option to go through expected flow.
+    """
+    logger.info("\n\nCLeaning up symlinks")
+    cleanup_symlinks()
+
+    logger.info("\n\nCLeaning up files and directories")
+    cleanup_files_and_dir()
+
+
+if __name__ == "__main__":
+    main()
