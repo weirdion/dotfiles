@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 
-from subprocess import run
+from subprocess import run, PIPE
 
 COLOR_BLUE = "\033[94m"
 COLOR_RED = "\033[31m"
@@ -146,7 +146,7 @@ def configure_git(current_dir: str):
     """
     Function that configures git.
     Some things like name are hardcoded, but sensitive things like email are prompted.
-    While GPG key is needed, it is not configured here intentionally.
+    GPG key is looked up based on email entered.
     """
     gitconfig_file = os.path.join(HOME_DIR, ".gitconfig")
     configure_git_config = True
@@ -172,6 +172,18 @@ def configure_git(current_dir: str):
 
         email = input("Enter your git associated email: ")
         run(f"git config --global user.email {email}".split())
+
+        logger.info(f"Looking for gpg key for {email} ...")
+        result = run(f"gpg --list-secret-keys --keyid-format LONG {email}".split(),
+            stdout=PIPE, stderr=PIPE)
+
+        if result.returncode != 0:
+            logger.warning("No GPG key found")
+            return
+
+        logger.warning("GPG key found, installing to gitconfig")
+        key = result.stdout.decode("utf-8").splitlines()[0].split()[1].split("/")[1]
+        run(f"git config --global user.signingkey {key}".split())
 
 
 def main():
