@@ -36,7 +36,7 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 
-def __create_symlink(source, destination):
+def __create_symlink(source: str, destination: str):
     """
     Function that creates a symlink from source to destination.
     :param source: source file or directory that needs to be linked.
@@ -49,6 +49,7 @@ def __create_symlink(source, destination):
         symlink_success = True
     except OSError as err:
         err_msg = f'Failed to create symlink from src: {source} dest: {destination}. Reason: {err}'
+        logger.error(err_msg)
         symlink_success = False
 
     return (symlink_success, err_msg)
