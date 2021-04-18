@@ -103,11 +103,10 @@ def do_setup_zsh():
         run(f"git clone https://github.com/romkatv/powerlevel10k.git --depth 5 --single-branch {ZSH_THEME_DIR}/powerlevel10k".split())
 
 
-def do_symlinks():
+def do_symlinks(current_dir: str):
     """
     Function that performs all the needed symlinks for files and directories.
     """
-    current_dir = os.getcwd()
 
     for d in directories_to_install:
         __create_symlink(os.path.join(current_dir, d), os.path.join(HOME_DIR, d))
@@ -143,7 +142,7 @@ def do_symlinks():
             __create_symlink(os.path.join(current_dir, "config/zsh/.p10k-pretty.zsh"), os.path.join(HOME_DIR, ".p10k.zsh"))
 
 
-def configure_git():
+def configure_git(current_dir: str):
     """
     Function that configures git.
     Some things like name are hardcoded, but sensitive things like email are prompted.
@@ -160,11 +159,13 @@ def configure_git():
             logger.info("Skipping .gitconfig, file already exists and wasn't replaced.")
     
     if configure_git_config:
+        git_alias_file = os.path.join(current_dir, "config/gitconfig.aliases")
         run("git config --global user.name Ankit Sadana".split())
         
         run("git config --global http.sslVerify true".split())
         run("git config --global core.editor vim".split())
         run("git config --global init.defaultBranch main".split())
+        run(f"git config --global include.path {git_alias_file}".split())
         
         run("git config --global gpg.program gpg2".split())
         run("git config --global commit.gpgsign true".split())
@@ -178,6 +179,8 @@ def main():
     Function that does all the orchestration between functions.
     TODO: Configure this into a menu, with auto option to go through expected flow.
     """
+    current_dir = os.getcwd()
+
     logger.info("Checking existing files and directories")
     check_if_dest_exists()
 
@@ -185,10 +188,10 @@ def main():
     do_setup_zsh()
 
     logger.info("Creating symlinks")
-    do_symlinks()
+    do_symlinks(current_dir)
 
     logger.info("Configuring git-config")
-    configure_git()
+    configure_git(current_dir)
 
 
 if __name__ == "__main__":
