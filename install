@@ -160,7 +160,7 @@ def configure_git(current_dir: str):
     
     if configure_git_config:
         git_alias_file = os.path.join(current_dir, "config/gitconfig.aliases")
-        run("git config --global user.name Ankit Sadana".split())
+        run(["git", "config", "--global", "user.name", "Ankit Sadana"])
         
         run("git config --global http.sslVerify true".split())
         run("git config --global core.editor vim".split())
