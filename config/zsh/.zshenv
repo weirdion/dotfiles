@@ -4,8 +4,9 @@
 
 # zsh history control
 export HISTFILE=$HOME/.zsh_history
-export HISTSIZE=10000
-export SAVEHIST=$HISTSIZE
+export HISTSIZE=12000  # HISTSIZE needs to be greater than SAVEHIST for HIST_EXPIRE_DUPS_FIRST
+export SAVEHIST=10000
+export HISTORY_IGNORE="(ls|cat)"
 
 # Path to your oh-my-zsh installation.
 [ -d ${HOME}/.oh-my-zsh ] && export ZSH="${HOME}/.oh-my-zsh"
@@ -39,3 +40,32 @@ export ZSH_THEME="powerlevel10k/powerlevel10k"
 # or set a custom format using the strftime function format specifications,
 # see 'man strftime' for details.
 # HIST_STAMPS="mm/dd/yyyy"
+
+# options man - http://zsh.sourceforge.net/Doc/Release/Options.html
+
+# options - directory
+setopt  pushd_ignore_dups
+
+# options - history
+setopt  hist_subst_pattern
+setopt  hist_expire_dups_first
+setopt  hist_ignore_all_dups
+setopt  hist_reduce_blanks
+setopt  hist_save_no_dups
+setopt  inc_append_history
+
+# options - expansion/globbing
+setopt  complete_aliases
+setopt  warn_create_global
+
+# options - jobs
+setopt  long_list_jobs
+setopt  monitor
+setopt  notify
+
+# options - scripts/functions
+setopt  NO_verbose
+setopt  NO_xtrace
+
+# options - shell emulation
+setopt  NO_continue_on_error

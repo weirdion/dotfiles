@@ -21,6 +21,8 @@ compinit
 # Add wisely, as too many plugins slow down shell startup.ex
 plugins=(
   git
+  colored-man-pages
+  safe-paste
   zsh-autosuggestions
   zsh-completions
   history-substring-search
