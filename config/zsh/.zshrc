@@ -18,15 +18,14 @@ compinit
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
+# Add wisely, as too many plugins slow down shell startup.ex
 plugins=(
   git
+  zsh-autosuggestions
+  zsh-completions
+  history-substring-search
+  zsh-syntax-highlighting
 )
-
-# TODO: #5: enable this after install script
-# zsh-history-substring-search
-# zsh-autosuggestions
-# zsh-syntax-highlighting
 
 source $ZSH/oh-my-zsh.sh
 

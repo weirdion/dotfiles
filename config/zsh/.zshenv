@@ -8,12 +8,8 @@ export HISTSIZE=10000
 export SAVEHIST=$HISTSIZE
 
 # Path to your oh-my-zsh installation.
-[ -d /usr/share/oh-my-zsh ] && export ZSH="/usr/share/oh-my-zsh"
 [ -d ${HOME}/.oh-my-zsh ] && export ZSH="${HOME}/.oh-my-zsh"
 
-[ $(sed -n 's/^ID=//p' /etc/os-release) = "arch" ] && export ZSH_CUSTOM=/usr/share/oh-my-zsh/custom
-
-# for mac: git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME/.oh-my-zsh/custom/themes/powerlevel10k
 export ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.

@@ -181,16 +181,16 @@ def main():
     """
     current_dir = os.getcwd()
 
-    logger.info("Checking existing files and directories")
+    logger.info("\n\nChecking existing files and directories")
     check_if_dest_exists()
 
-    logger.info("Setting up oh-my-zsh, plugins and themes")
+    logger.info("\n\nSetting up oh-my-zsh, plugins and themes")
     do_setup_zsh()
 
-    logger.info("Creating symlinks")
+    logger.info("\n\nCreating symlinks")
     do_symlinks(current_dir)
 
-    logger.info("Configuring git-config")
+    logger.info("\n\nConfiguring git-config")
     configure_git(current_dir)
 
 
