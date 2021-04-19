@@ -154,13 +154,13 @@ def check_if_dest_exists():
         if not __is_destination_already_set(source, dest):
             if os.path.isdir(dest):
                 _print_info(f"Directory {dest} found, backing up")
-                os.rename(abs_path_d, f"{dest}.backup")
+                os.rename(dest, f"{dest}.backup")
 
     for source, dest in INSTALL_FILE_DICT.items():
         if not __is_destination_already_set(source, dest):
             if os.path.isfile(dest):
                 _print_info(f"File {dest} found, backing up")
-                os.rename(f, f"{dest}.backup")
+                os.rename(dest, f"{dest}.backup")
 
 
 def do_setup_zsh():
@@ -217,13 +217,13 @@ def do_symlinks():
         else:
             install_p10k = False
             _print_info("Skipping .p10k.zsh, file already exists and wasn't replaced.")
-    
+
     if install_p10k:
         while (answer := input(f"""\nPowerlevel10k options,
             \n    1) lean
             \n    2) pretty
             \n(1/2): """).lower()) not in {"1", "2"}: _print_warning("Invalid input.")
-        
+
         if answer[0] == "1":
             __create_symlink(os.path.join(CURRENT_DIR, "config/zsh/.p10k-lean.zsh"), os.path.join(HOME_DIR, ".p10k.zsh"))
         else:
