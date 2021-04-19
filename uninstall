@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import logging
 import os
 import shutil
 import sys
@@ -9,13 +8,14 @@ import sys
 HOME_DIR = os.environ["HOME"]
 ZSH_DIR = os.path.join(HOME_DIR, ".oh-my-zsh")
 
-logger = logging.getLogger("dotfiles_install")
-handler = logging.StreamHandler(stream=sys.stdout)
-handler.setLevel(logging.INFO)
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+COLOR_BLUE = "\033[94m"
+COLOR_RED = "\033[31m"
+COLOR_GREEN = "\033[32m"
+COLOR_YELLOW = "\033[93m"
+COLOR_NONE = "\033[00m"
+ICON_CHECK_MARK = "\U00002705"
 
-symlinks_to_unlink = [
+SYMLINKS_TO_UNLINK = [
     os.path.join(HOME_DIR, ".bashrc"),
     os.path.join(HOME_DIR, ".vimrc"),
     os.path.join(HOME_DIR, ".p10k.zsh"),
@@ -24,13 +24,62 @@ symlinks_to_unlink = [
     os.path.join(HOME_DIR, "bin")
 ]
 
-files_to_delete = [
+FILES_TO_DELETE = [
     os.path.join(HOME_DIR, ".gitconfig")
 ]
 
-directories_to_delete = [
+DIRECTORIES_TO_DELETE = [
     os.path.join(HOME_DIR, ".oh-my-zsh")
 ]
+
+
+def __print_colored(message: str, color: str):
+    """
+    Function that simply prints the message but in a specific color provided by the param.
+    :param message: the message to be printed
+    :param color: the color to use for the message
+    """
+    print(f"{color}{message}{COLOR_NONE}")
+
+
+def _print_info(message):
+    """
+    Function that prints a message with INFO colors (NONE).
+    :param message: the message to be printed
+    """
+    __print_colored(message, COLOR_NONE)
+
+
+def _print_title(message):
+    """
+    Function that prints a message with TITLE colors (BLUE).
+    :param message: the message to be printed
+    """
+    __print_colored(message, COLOR_BLUE)
+
+
+def _print_done(message):
+    """
+    Function that prints a message with DONE colors (GREEN).
+    :param message: the message to be printed
+    """
+    __print_colored(message, COLOR_GREEN)
+
+
+def _print_warning(message):
+    """
+    Function that prints a message with WARNING colors (YELLOW).
+    :param message: the message to be printed
+    """
+    __print_colored(message, COLOR_YELLOW)
+
+
+def _print_error(message):
+    """
+    Function that prints a message with ERROR colors (RED).
+    :param message: the message to be printed
+    """
+    __print_colored(message, COLOR_RED)
 
 
 def __remove_symlink(link: str):
@@ -39,20 +88,20 @@ def __remove_symlink(link: str):
     :param link: Link path to unlink.
     """
     if os.path.islink(link):
-        logger.info(f"Unlinking {link}.")
         try:
             os.unlink(link)
+            _print_done(f"Symlink {link} unlinked.")
         except OSError as err:
-            logger.error(f"Failed to unlink {link}. Reason: {err}")
+            _print_error(f"Failed to unlink {link}. Reason: {err}")
     else:
-        logger.warning(f"{link} is not a symlink.")
+        _print_warning(f"{link} is not a symlink.")
 
 
 def cleanup_symlinks():
     """
     Function that cleans up the symlinks.
     """
-    for link in symlinks_to_unlink:
+    for link in SYMLINKS_TO_UNLINK:
         __remove_symlink(link)
 
 
@@ -60,19 +109,19 @@ def cleanup_files_and_dir():
     """
     Function that cleans up files and directories
     """
-    for f in files_to_delete:
+    for f in FILES_TO_DELETE:
         if os.path.isfile(f):
-            logger.info(f"Removing file {f}")
             os.remove(f)
+            _print_done(f"File {f} removed.")
         else:
-            logger.warning(f"File {f} does not exist.")
+            _print_warning(f"File {f} does not exist.")
 
-    for d in directories_to_delete:
+    for d in DIRECTORIES_TO_DELETE:
         if os.path.isdir(d):
-            logger.info(f"Removing directory {d}")
             shutil.rmtree(d)
+            _print_done(f"Directory {d} removed.")
         else:
-            logger.warning(f"Directory {d} does not exist.")
+            _print_warning(f"Directory {d} does not exist.")
 
 
 def main():
@@ -80,11 +129,13 @@ def main():
     Function that does all the orchestration between functions.
     TODO: Configure this into a menu, with auto option to go through expected flow.
     """
-    logger.info("\n\nCLeaning up symlinks")
+    _print_title("\nCLeaning up symlinks")
     cleanup_symlinks()
 
-    logger.info("\n\nCLeaning up files and directories")
+    _print_title("\nCLeaning up files and directories")
     cleanup_files_and_dir()
+
+    _print_info(f"\nAll done! {ICON_CHECK_MARK}")
 
 
 if __name__ == "__main__":

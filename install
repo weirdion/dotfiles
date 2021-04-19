@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import logging
 import os
 import sys
 
@@ -11,6 +10,7 @@ COLOR_RED = "\033[31m"
 COLOR_GREEN = "\033[32m"
 COLOR_YELLOW = "\033[93m"
 COLOR_NONE = "\033[00m"
+ICON_CHECK_MARK = "\U00002705"
 
 # Use environ instead of getenv since we want it to fail if var not found
 HOME_DIR = os.environ["HOME"]
@@ -63,6 +63,14 @@ def _print_title(message):
     __print_colored(message, COLOR_BLUE)
 
 
+def _print_done(message):
+    """
+    Function that prints a message with DONE colors (GREEN).
+    :param message: the message to be printed
+    """
+    __print_colored(message, COLOR_GREEN)
+
+
 def _print_warning(message):
     """
     Function that prints a message with WARNING colors (YELLOW).
@@ -91,7 +99,7 @@ def __create_symlink(source: str, destination: str):
 
     try:
         os.symlink(source, destination)
-        _print_info(f"Symlink {destination} -> {source}")
+        _print_done(f"Symlink {destination} -> {source} created")
     except OSError as err:
         _print_error(f'Failed to create symlink from src: {source} dest: {destination}. Reason: {err}')
 
@@ -109,6 +117,21 @@ def __prompt_user_yes_no(question: str) -> bool:
         return True
 
     return False
+
+
+def _execute(command: list):
+    """
+    Function that executes subprocess.run command and captures the output.
+    :param command: command in form of a list
+    :return bool, True if command succeded, false otherwise.
+    """
+    result = run(command, stdout=PIPE, stderr=PIPE)
+    
+    if result.returncode != 0:
+        return False
+    
+    return True
+
 
 def __is_destination_already_set(source: str, destination: str):
     """
@@ -147,18 +170,30 @@ def do_setup_zsh():
     Clone zsh-autosuggestions, zsh-completions, zsh-history-substring-search, zsh-syntax-highlighting in ZSH_CUSTOM/custom/plugins
     """
     if not os.path.isdir(ZSH_DIR):
-        run(f"git clone https://github.com/ohmyzsh/ohmyzsh.git --depth 5 --single-branch {ZSH_DIR}".split())
+        res = _execute(f"git clone https://github.com/ohmyzsh/ohmyzsh.git --depth 5 --single-branch {ZSH_DIR}".split())
+        if res:
+            _print_done(f"ZSH dir: {ZSH_DIR} clone complete.")
+        else:
+            _print_error(f"ZSH dir: {ZSH_DIR} clone failed.")
     else:
         _print_info(f"ZSH dir: {ZSH_DIR} already exists, skipping.")
     
     for plugin in ["zsh-autosuggestions", "zsh-completions", "zsh-history-substring-search", "zsh-syntax-highlighting"]:
         if not os.path.isdir(f"{ZSH_PLUGIN_DIR}/{plugin}"):
-            run(f"git clone https://github.com/zsh-users/{plugin}.git --depth 5 --single-branch {ZSH_PLUGIN_DIR}/{plugin}".split())
+            res = _execute(f"git clone https://github.com/zsh-users/{plugin}.git --depth 5 --single-branch {ZSH_PLUGIN_DIR}/{plugin}".split())
+            if res:
+                _print_done(f"ZSH plugin: {plugin} clone complete.")
+            else:
+                _print_error(f"ZSH plugin: {plugin} clone failed.")
         else:
             _print_info(f"ZSH plugin: {plugin} already exists, skipping.")
     
     if not os.path.isdir(f"{ZSH_THEME_DIR}/powerlevel10k"):
-        run(f"git clone https://github.com/romkatv/powerlevel10k.git --depth 5 --single-branch {ZSH_THEME_DIR}/powerlevel10k".split())
+        res = _execute(f"git clone https://github.com/romkatv/powerlevel10k.git --depth 5 --single-branch {ZSH_THEME_DIR}/powerlevel10k".split())
+        if res:
+            _print_done(f"ZSH theme: powerlevel10k clone complete.")
+        else:
+            _print_error(f"ZSH theme: powerlevel10k clone failed.")
     else:
         _print_info(f"ZSH theme: powerlevel10k already exists, skipping.")
 
@@ -184,7 +219,7 @@ def do_symlinks():
             _print_info("Skipping .p10k.zsh, file already exists and wasn't replaced.")
     
     if install_p10k:
-        while (answer := input(f"""Powerlevel10k options,
+        while (answer := input(f"""\nPowerlevel10k options,
             \n    1) lean
             \n    2) pretty
             \n(1/2): """).lower()) not in {"1", "2"}: _print_warning("Invalid input.")
@@ -213,18 +248,18 @@ def configure_git():
     
     if configure_git_config:
         git_alias_file = os.path.join(CURRENT_DIR, "config/gitconfig.aliases")
-        run(["git", "config", "--global", "user.name", "Ankit Sadana"])
+        _execute(["git", "config", "--global", "user.name", "Ankit Sadana"])
         
-        run("git config --global http.sslVerify true".split())
-        run("git config --global core.editor vim".split())
-        run("git config --global init.defaultBranch main".split())
-        run(f"git config --global include.path {git_alias_file}".split())
+        _execute("git config --global http.sslVerify true".split())
+        _execute("git config --global core.editor vim".split())
+        _execute("git config --global init.defaultBranch main".split())
+        _execute(f"git config --global include.path {git_alias_file}".split())
         
-        run("git config --global gpg.program gpg2".split())
-        run("git config --global commit.gpgsign true".split())
+        _execute("git config --global gpg.program gpg2".split())
+        _execute("git config --global commit.gpgsign true".split())
 
         email = input("Enter your git associated email: ")
-        run(f"git config --global user.email {email}".split())
+        _execute(f"git config --global user.email {email}".split())
 
         _print_info(f"Looking for gpg key for {email} ...")
         result = run(f"gpg --list-secret-keys --keyid-format LONG {email}".split(),
@@ -234,9 +269,9 @@ def configure_git():
             _print_warning("No GPG key found")
             return
 
-        _print_info("GPG key found, installing to gitconfig")
         key = result.stdout.decode("utf-8").splitlines()[0].split()[1].split("/")[1]
-        run(f"git config --global user.signingkey {key}".split())
+        _execute(f"git config --global user.signingkey {key}".split())
+        _print_done("GPG key found, installed to gitconfig")
 
 
 def main():
@@ -254,6 +289,8 @@ def main():
 
     _print_title("\nConfiguring git-config")
     configure_git()
+
+    _print_info(f"\nAll done! {ICON_CHECK_MARK}")
 
 
 if __name__ == "__main__":
