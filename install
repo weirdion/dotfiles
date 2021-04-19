@@ -9,6 +9,7 @@ from subprocess import run, PIPE
 COLOR_BLUE = "\033[94m"
 COLOR_RED = "\033[31m"
 COLOR_GREEN = "\033[32m"
+COLOR_YELLOW = "\033[93m"
 COLOR_NONE = "\033[00m"
 
 # Use environ instead of getenv since we want it to fail if var not found
@@ -37,11 +38,45 @@ INSTALL_DIR_DICT = {
 INSTALL_DIR_DICT = {os.path.join(CURRENT_DIR, s): os.path.join(HOME_DIR, d) for s, d in INSTALL_DIR_DICT.items()}
 
 
-logger = logging.getLogger("dotfiles_install")
-handler = logging.StreamHandler(stream=sys.stdout)
-handler.setLevel(logging.INFO)
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+def __print_colored(message: str, color: str):
+    """
+    Function that simply prints the message but in a specific color provided by the param.
+    :param message: the message to be printed
+    :param color: the color to use for the message
+    """
+    print(f"{color}{message}{COLOR_NONE}")
+
+
+def _print_info(message):
+    """
+    Function that prints a message with INFO colors (NONE).
+    :param message: the message to be printed
+    """
+    __print_colored(message, COLOR_NONE)
+
+
+def _print_title(message):
+    """
+    Function that prints a message with TITLE colors (BLUE).
+    :param message: the message to be printed
+    """
+    __print_colored(message, COLOR_BLUE)
+
+
+def _print_warning(message):
+    """
+    Function that prints a message with WARNING colors (YELLOW).
+    :param message: the message to be printed
+    """
+    __print_colored(message, COLOR_YELLOW)
+
+
+def _print_error(message):
+    """
+    Function that prints a message with ERROR colors (RED).
+    :param message: the message to be printed
+    """
+    __print_colored(message, COLOR_RED)
 
 
 def __create_symlink(source: str, destination: str):
@@ -50,15 +85,15 @@ def __create_symlink(source: str, destination: str):
     :param source: source file or directory that needs to be linked.
     :param destination: destination file or directory where the link will be made.
     """
-    if __is_destination_already_set:
-        logger.info(f"Symlink {destination} -> {source} already exists, skipping.")
+    if __is_destination_already_set(source, destination):
+        _print_info(f"Symlink {destination} -> {source} already exists, skipping.")
         return
 
     try:
         os.symlink(source, destination)
-        logger.info(f"Symlink {destination} -> {source}")
+        _print_info(f"Symlink {destination} -> {source}")
     except OSError as err:
-        logger.error(f'Failed to create symlink from src: {source} dest: {destination}. Reason: {err}')
+        _print_error(f'Failed to create symlink from src: {source} dest: {destination}. Reason: {err}')
 
 
 def __prompt_user_yes_no(question: str) -> bool:
@@ -68,7 +103,7 @@ def __prompt_user_yes_no(question: str) -> bool:
     :return: bool, True if user answers Yes, False otherwise.
     """
     while (answer := input(f"{question} (y/n): ").lower()) not in {"y", "yes", "n", "no"}:
-        print("Invalid input.")
+        _print_warning("Invalid input.")
 
     if answer[0] == "y":
         return True
@@ -95,13 +130,13 @@ def check_if_dest_exists():
     for source, dest in INSTALL_DIR_DICT.items():
         if not __is_destination_already_set(source, dest):
             if os.path.isdir(dest):
-                logger.info(f"Directory {dest} found, backing up")
+                _print_info(f"Directory {dest} found, backing up")
                 os.rename(abs_path_d, f"{dest}.backup")
 
     for source, dest in INSTALL_FILE_DICT.items():
         if not __is_destination_already_set(source, dest):
             if os.path.isfile(dest):
-                logger.info(f"File {dest} found, backing up")
+                _print_info(f"File {dest} found, backing up")
                 os.rename(f, f"{dest}.backup")
 
 
@@ -114,18 +149,18 @@ def do_setup_zsh():
     if not os.path.isdir(ZSH_DIR):
         run(f"git clone https://github.com/ohmyzsh/ohmyzsh.git --depth 5 --single-branch {ZSH_DIR}".split())
     else:
-        logger.info(f"ZSH dir: {ZSH_DIR} already exists, skipping.")
+        _print_info(f"ZSH dir: {ZSH_DIR} already exists, skipping.")
     
     for plugin in ["zsh-autosuggestions", "zsh-completions", "zsh-history-substring-search", "zsh-syntax-highlighting"]:
         if not os.path.isdir(f"{ZSH_PLUGIN_DIR}/{plugin}"):
             run(f"git clone https://github.com/zsh-users/{plugin}.git --depth 5 --single-branch {ZSH_PLUGIN_DIR}/{plugin}".split())
         else:
-            logger.info(f"ZSH plugin: {plugin} already exists, skipping.")
+            _print_info(f"ZSH plugin: {plugin} already exists, skipping.")
     
     if not os.path.isdir(f"{ZSH_THEME_DIR}/powerlevel10k"):
         run(f"git clone https://github.com/romkatv/powerlevel10k.git --depth 5 --single-branch {ZSH_THEME_DIR}/powerlevel10k".split())
     else:
-        logger.info(f"ZSH theme: powerlevel10k already exists, skipping.")
+        _print_info(f"ZSH theme: powerlevel10k already exists, skipping.")
 
 
 def do_symlinks():
@@ -146,13 +181,13 @@ def do_symlinks():
             os.rename(p10k_file, f"{p10k_file}.backup")
         else:
             install_p10k = False
-            logger.info("Skipping .p10k.zsh, file already exists and wasn't replaced.")
+            _print_info("Skipping .p10k.zsh, file already exists and wasn't replaced.")
     
     if install_p10k:
         while (answer := input(f"""Powerlevel10k options,
             \n    1) lean
             \n    2) pretty
-            \n(1/2): """).lower()) not in {"1", "2"}: print("Invalid input.")
+            \n(1/2): """).lower()) not in {"1", "2"}: _print_warning("Invalid input.")
         
         if answer[0] == "1":
             __create_symlink(os.path.join(CURRENT_DIR, "config/zsh/.p10k-lean.zsh"), os.path.join(HOME_DIR, ".p10k.zsh"))
@@ -174,7 +209,7 @@ def configure_git():
             os.rename(gitconfig_file, f"{gitconfig_file}.backup")
         else:
             configure_git_config = False
-            logger.info("Skipping .gitconfig, file already exists and wasn't replaced.")
+            _print_info("Skipping .gitconfig, file already exists and wasn't replaced.")
     
     if configure_git_config:
         git_alias_file = os.path.join(CURRENT_DIR, "config/gitconfig.aliases")
@@ -191,15 +226,15 @@ def configure_git():
         email = input("Enter your git associated email: ")
         run(f"git config --global user.email {email}".split())
 
-        logger.info(f"Looking for gpg key for {email} ...")
+        _print_info(f"Looking for gpg key for {email} ...")
         result = run(f"gpg --list-secret-keys --keyid-format LONG {email}".split(),
             stdout=PIPE, stderr=PIPE)
 
         if result.returncode != 0:
-            logger.warning("No GPG key found")
+            _print_warning("No GPG key found")
             return
 
-        logger.warning("GPG key found, installing to gitconfig")
+        _print_info("GPG key found, installing to gitconfig")
         key = result.stdout.decode("utf-8").splitlines()[0].split()[1].split("/")[1]
         run(f"git config --global user.signingkey {key}".split())
 
@@ -211,13 +246,13 @@ def main():
     """
     check_if_dest_exists()
 
-    logger.info("\nSetting up oh-my-zsh, plugins and themes")
+    _print_title("\nSetting up oh-my-zsh, plugins and themes")
     do_setup_zsh()
 
-    logger.info("\nCreating symlinks")
+    _print_title("\nCreating symlinks")
     do_symlinks()
 
-    logger.info("\nConfiguring git-config")
+    _print_title("\nConfiguring git-config")
     configure_git()
 
 
