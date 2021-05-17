@@ -34,6 +34,8 @@ export PYENV_ROOT="$HOME/.pyenv"
 
 # nvm
 export NVM_DIR="$HOME/.nvm"
+export NPM_USER_DIR="$HOME/node_modules/.bin"
+! [[ $PATH =~ ${NPM_USER_DIR} ]] && export PATH="${NPM_USER_DIR}:$PATH"
 
 # Go
 export GOPATH="${HOME}/go"
