@@ -8,7 +8,7 @@ source "$DOTFILES_DIR/config/shell_common/functions.bash"
 
 # Python
 if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
+  eval "$(pyenv init --path)"
 fi
 
 # NVM
