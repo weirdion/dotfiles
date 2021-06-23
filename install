@@ -255,7 +255,7 @@ def configure_git():
         _execute("git config --global init.defaultBranch main".split())
         _execute(f"git config --global include.path {git_alias_file}".split())
         
-        _execute("git config --global gpg.program gpg2".split())
+        _execute("git config --global gpg.program gpg".split())
         _execute("git config --global commit.gpgsign true".split())
 
         email = input("Enter your git associated email: ")
