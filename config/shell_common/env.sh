@@ -23,3 +23,8 @@ fi
 if [[ -x /usr/libexec/path_helper ]]; then
   eval $(/usr/libexec/path_helper -s)
 fi
+
+# Linux HomeBrew helper
+if [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
