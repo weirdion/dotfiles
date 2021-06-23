@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-export BROWSER=/usr/bin/firefox
+export BROWSER=/usr/bin/brave-browser
 export EDITOR=/usr/bin/vim
 
 # Machine based options
