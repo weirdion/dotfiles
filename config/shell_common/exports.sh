@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-export BROWSER=/usr/bin/brave-browser
+export BROWSER=/usr/bin/brave-browser-stable
 export EDITOR=/usr/bin/vim
 
 # Machine based options
