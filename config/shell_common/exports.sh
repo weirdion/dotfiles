@@ -39,12 +39,12 @@ export NPM_USER_DIR="$HOME/node_modules/.bin"
 
 # Go
 export GOPATH="${HOME}/go"
-! [[ $PATH =~ ${ANDROID_HOME}/platform-tools ]] && export PATH="${ANDROID_HOME}/platform-tools:$PATH"
+! [[ $PATH =~ ${GOPATH}/bin ]] && export PATH="${GOPATH}/bin:$PATH"
 
 # Android
-export ANDROID_HOME="$SDK_DIR/android-sdk"
+export ANDROID_HOME="$HOME/Android/Sdk"
 export ANDROID_NDK_HOME="$ANDROID_HOME/ndk-bundle/"
-! [[ $PATH =~ ${GOPATH}/bin ]] && export PATH="${GOPATH}/bin:$PATH"
+! [[ $PATH =~ ${ANDROID_HOME}/platform-tools ]] && export PATH="${ANDROID_HOME}/platform-tools:$PATH"
 
 # Flutter
 export FLUTTER_HOME="$SDK_DIR/flutter"
