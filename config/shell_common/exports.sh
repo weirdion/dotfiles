@@ -35,7 +35,9 @@ export PYENV_ROOT="$HOME/.pyenv"
 # nvm
 export NVM_DIR="$HOME/.nvm"
 export NPM_USER_DIR="$HOME/node_modules/.bin"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 ! [[ $PATH =~ ${NPM_USER_DIR} ]] && export PATH="${NPM_USER_DIR}:$PATH"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Go
 export GOPATH="${HOME}/go"
@@ -49,6 +51,9 @@ export ANDROID_NDK_HOME="$ANDROID_HOME/ndk-bundle/"
 # Flutter
 export FLUTTER_HOME="$SDK_DIR/flutter"
 ! [[ $PATH =~ ${FLUTTER_HOME}/bin ]] && export PATH="${FLUTTER_HOME}/bin:$PATH"
+
+# GPG
+export GPG_TTY=$(tty)
 
 # Path
 
