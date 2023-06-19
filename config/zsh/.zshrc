@@ -39,8 +39,10 @@ source "$DOTFILES_DIR/config/shell_common/env.sh"
 
 if [ "$MACHINE" = "Darwin" ]; then
   source "$DOTFILES_DIR/config/shell_common/darwin.aliases.sh"
+  export PATH="$HOMEBREW_PATH/bin:$PATH"
 else
   source "$DOTFILES_DIR/config/shell_common/linux.aliases.sh"
 fi
 
 [ -f $HOME/.p10k.zsh ] && source $HOME/.p10k.zsh
+

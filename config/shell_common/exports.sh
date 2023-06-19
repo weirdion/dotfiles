@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-export BROWSER=/usr/bin/brave-browser-stable
+# export BROWSER=/usr/bin/brave-browser-stable
 export EDITOR=/usr/bin/vim
 
 # Machine based options
@@ -25,6 +25,9 @@ export MACHINE
 # SDK and programming stuff
 export SDK_DIR="$homeDir/sdk"
 
+# Homebrew
+[[ $MACHINE == "Darwin" ]] && export HOMEBREW_PATH="/opt/homebrew"
+
 # toolbox
 [ -d "$HOME/.toolbox" ] && export PATH=$HOME/.toolbox/bin:$PATH
 
@@ -35,7 +38,11 @@ export PYENV_ROOT="$HOME/.pyenv"
 # nvm
 export NVM_DIR="$HOME/.nvm"
 export NPM_USER_DIR="$HOME/node_modules/.bin"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+if [[ $MACHINE == "Darwin" ]]; then
+	[ -s "$HOMEBREW_PATH/opt/nvm/nvm.sh" ] && \. "$HOMEBREW_PATH/opt/nvm/nvm.sh"  # This loads nvm
+else
+	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+fi
 ! [[ $PATH =~ ${NPM_USER_DIR} ]] && export PATH="${NPM_USER_DIR}:$PATH"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
@@ -59,5 +66,5 @@ export GPG_TTY=$(tty)
 
 if ! [[ "$PATH" =~ ${HOME}/.local/bin:${HOME}/bin:${DOTFILES_DIR}/bin: ]]
 then
-    export PATH="$HOME/.local/bin:$HOME/bin:$DOTFILES_DIR/bin:$PATH"
+    export PATH="$HOME/.local/bin:$HOME/bin:$DOTFILES_DIR/bin:$HOMEBREW_PATH/bin:$PATH"
 fi
