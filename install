@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import os
+import pathlib
+import platform
 import sys
 
 from subprocess import run, PIPE
@@ -274,6 +276,24 @@ def configure_git():
         _print_done("GPG key found, installed to gitconfig")
 
 
+def configure_gpg():
+    """
+    Function that configures gpg agent to be used with pinentry
+    """
+    gpg_directory = pathlib.Path("~/.gnupg").expanduser()
+    if not gpg_directory.is_dir():
+        gpg_directory.mkdir(mode=0o700)
+
+    conf_file = gpg_directory / "gpg.conf"
+    conf_file.write_text("use-agent\n", encoding="utf-8", newline="\n")
+
+    agent_file = gpg_directory / "gpg-agent.conf"
+    if platform.system() == "Darwin":
+        agent_file.write_text("pinentry-program /opt/homebrew/bin/pinentry-mac\n", encoding="utf-8", newline="\n")
+    else:
+        agent_file.write_text("pinentry-program /usr/bin/pinentry-tty\n", encoding="utf-8", newline="\n")
+
+
 def main():
     """
     Function that does all the orchestration between functions.
@@ -286,6 +306,9 @@ def main():
 
     _print_title("\nCreating symlinks")
     do_symlinks()
+
+    _print_title("\nConfiguring gpg")
+    configure_gpg()
 
     _print_title("\nConfiguring git-config")
     configure_git()
