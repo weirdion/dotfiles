@@ -199,6 +199,15 @@ def do_setup_zsh():
     else:
         _print_info(f"ZSH theme: powerlevel10k already exists, skipping.")
 
+    if os.path.isfile("stop-the-warnings.diff"):
+        cwd = os.getcwd()
+        _print_info("Patching oh-my-zsh ...")
+        res = _execute(f"cd ${ZSH_DIR} && git apply ${cwd}/stop-the-warnings.diff && cd ${cwd}")
+        if res:
+            _print_done(f"Patching ZSH complete.")
+        else:
+            _print_error(f"Patching ZSH failed.")
+
 
 def do_symlinks():
     """

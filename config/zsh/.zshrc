@@ -11,8 +11,10 @@ bindkey -v
 
 # comp
 zstyle :compinstall filename '${HOME}/.zshrc'
-autoload -Uz compinit
+# compinit - command completion
+autoload -Uz compinit promptinit
 compinit
+promptinit
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
