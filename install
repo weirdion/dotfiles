@@ -202,7 +202,7 @@ def do_setup_zsh():
     if os.path.isfile("stop-the-warnings.diff"):
         cwd = os.getcwd()
         _print_info("Patching oh-my-zsh ...")
-        res = _execute(f"cd ${ZSH_DIR} && git apply ${cwd}/stop-the-warnings.diff && cd ${cwd}")
+        res = _execute(f"cd {ZSH_DIR} && git apply {cwd}/stop-the-warnings.diff && cd {cwd}".split())
         if res:
             _print_done(f"Patching ZSH complete.")
         else:
