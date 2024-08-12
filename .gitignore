@@ -1,2 +1,5 @@
 # Antigen ignore
 .antigenrc.zwc
+
+config/shell_work/*
+!config/shell_work/.gitkeep

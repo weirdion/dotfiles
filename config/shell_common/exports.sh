@@ -59,6 +59,10 @@ export ANDROID_NDK_HOME="$ANDROID_HOME/ndk-bundle/"
 export FLUTTER_HOME="$SDK_DIR/flutter"
 ! [[ $PATH =~ ${FLUTTER_HOME}/bin ]] && export PATH="${FLUTTER_HOME}/bin:$PATH"
 
+# Rust
+export CARGO_HOME="$HOME/.cargo"
+! [[ $PATH =~ ${CARGO_HOME}/bin ]] && export PATH="${CARGO_HOME}/bin:$PATH"
+
 # GPG
 export GPG_TTY=$(tty)
 
