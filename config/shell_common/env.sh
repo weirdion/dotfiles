@@ -5,10 +5,14 @@ DOTFILES_DIR="$HOME/workspace/dotfiles"
 # Do shell_work first to not allow any overrides
 local scriptDir="${$(dirname $0)%/shell_common}"
 # Source exports from shell_work
-for e in $scriptDir/shell_work/*.sh; do
-	echo "====> Sourcing work export $e"
-	source "$e"
-done
+if [ -d "$scriptDir/shell_work" ]; then
+  if [ -n "$(ls -A "$scriptDir/shell_work"/*.sh 2>/dev/null)" ]; then
+    for e in "$scriptDir/shell_work"/*.sh; do
+      echo "====> Sourcing work export $e"
+      source "$e"
+    done
+  fi
+fi
 
 if [ "$MACHINE" = "Darwin" ]; then
   source "$DOTFILES_DIR/config/shell_common/darwin.aliases.sh"

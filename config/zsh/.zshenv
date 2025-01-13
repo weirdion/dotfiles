@@ -56,7 +56,7 @@ setopt  inc_append_history
 
 # options - expansion/globbing
 setopt  complete_aliases
-setopt  warn_create_global
+# setopt  warn_create_global
 
 # options - jobs
 setopt  long_list_jobs
@@ -69,3 +69,4 @@ setopt  NO_xtrace
 
 # options - shell emulation
 setopt  NO_continue_on_error
+. "$HOME/.cargo/env"
