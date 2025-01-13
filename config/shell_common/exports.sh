@@ -59,6 +59,10 @@ export ANDROID_NDK_HOME="$ANDROID_HOME/ndk-bundle/"
 export CARGO_HOME="$HOME/.cargo"
 ! [[ $PATH =~ ${CARGO_HOME}/bin ]] && export PATH="${CARGO_HOME}/bin:$PATH"
 
+# Rancher Desktop
+export RANCHER_HOME="$HOME/.rd"
+! [[ $PATH =~ ${RANCHER_HOME}/bin ]] && export PATH="${RANCHER_HOME}/bin:$PATH"
+
 # GPG
 export GPG_TTY=$(tty)
 
