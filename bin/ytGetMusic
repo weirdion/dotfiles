@@ -1,0 +1,23 @@
+#!/usr/bin/env zsh
+
+# Reference blog - https://ostechnix.com/yt-dlp-tutorial/
+
+function _ytGetMusic() {
+    local url="$1"
+    local filename=$(yt-dlp --get-filename -o "%(title)s.%(ext)s" "$url" | sed 's/ /./g')
+    yt-dlp --extract-audio --audio-format mp3 --audio-quality 3 -o "$filename" "$url"
+}
+
+if [ "$#" -eq 1 ]; then
+    _ytGetMusic "$1"
+else
+    echo -e  "\033[0;31mUnable to execute the command.\033[0m"
+    echo -e  "\033[0;37mUsage: ytGetMusic <URL>\033[0m"
+    exit 1
+fi
+
+if ! command -v yt-dlp &> /dev/null; then
+    echo -e "\033[0;31mError: yt-dlp is not installed.\033[0m"
+    echo -e "\033[0;37mInstall it with - breww install yt-dlp\033[0m"
+    exit 1
+fi
