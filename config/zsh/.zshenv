@@ -69,4 +69,5 @@ setopt  NO_xtrace
 
 # options - shell emulation
 setopt  NO_continue_on_error
-. "$HOME/.cargo/env"
+
+[ -d "$HOME/.cargo" ] && . "$HOME/.cargo/env"

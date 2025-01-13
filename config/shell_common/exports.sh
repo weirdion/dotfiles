@@ -47,21 +47,22 @@ fi
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Go
-export GOPATH="${HOME}/go"
-! [[ $PATH =~ ${GOPATH}/bin ]] && export PATH="${GOPATH}/bin:$PATH"
-
-# Android
-export ANDROID_HOME="$HOME/Android/Sdk"
-export ANDROID_NDK_HOME="$ANDROID_HOME/ndk-bundle/"
-! [[ $PATH =~ ${ANDROID_HOME}/platform-tools ]] && export PATH="${ANDROID_HOME}/platform-tools:$PATH"
+GOPATH="${HOME}/go"
+[ -d "$GOPATH" ] && export GOPATH="$GOPATH"
+[ -d "$GOPATH" ] && ! [[ $PATH =~ ${GOPATH}/bin ]] && export PATH="${GOPATH}/bin:$PATH"
 
 # Rust
-export CARGO_HOME="$HOME/.cargo"
-! [[ $PATH =~ ${CARGO_HOME}/bin ]] && export PATH="${CARGO_HOME}/bin:$PATH"
+RUSTUP_HOME="$HOME/.rustup"
+CARGO_HOME="$HOME/.cargo"
+[ -d "$RUSTUP_HOME" ] && export RUSTUP_HOME="$RUSTUP_HOME"
+[ -d "$RUSTUP_HOME" ] && ! [[ $PATH =~ ${RUSTUP_HOME}/bin ]] && export PATH="${RUSTUP_HOME}/bin:$PATH"
+[ -d "$CARGO_HOME" ] && export CARGO_HOME="$CARGO_HOME"
+[ -d "$CARGO_HOME" ] && ! [[ $PATH =~ ${CARGO_HOME}/bin ]] && export PATH="${CARGO_HOME}/bin:$PATH"
 
 # Rancher Desktop
-export RANCHER_HOME="$HOME/.rd"
-! [[ $PATH =~ ${RANCHER_HOME}/bin ]] && export PATH="${RANCHER_HOME}/bin:$PATH"
+RANCHER_HOME="$HOME/.rd"
+[ -d "$RANCHER_HOME" ] && export RANCHER_HOME="$RANCHER_HOME"
+[ -d "$RANCHER_HOME" ] && ! [[ $PATH =~ ${RANCHER_HOME}/bin ]] && export PATH="${RANCHER_HOME}/bin:$PATH"
 
 # GPG
 export GPG_TTY=$(tty)
