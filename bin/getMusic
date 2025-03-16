@@ -16,12 +16,12 @@ if [ "$#" -eq 1 ]; then
     _getMusic "$1"
 else
     echo -e  "\033[0;31mUnable to execute the command.\033[0m"
-    echo -e  "\033[0;37mUsage: ytGetMusic <URL>\033[0m"
+    echo -e  "\033[0;37mUsage: getMusic <URL>\033[0m"
     exit 1
 fi
 
 if ! command -v yt-dlp &> /dev/null; then
     echo -e "\033[0;31mError: yt-dlp is not installed.\033[0m"
-    echo -e "\033[0;37mInstall it with - breww install yt-dlp\033[0m"
+    echo -e "\033[0;37mInstall it with - brew install yt-dlp\033[0m"
     exit 1
 fi

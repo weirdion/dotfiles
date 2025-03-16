@@ -28,6 +28,6 @@ elif [ "$#" -eq 2 ]; then
     _getVideo "$1" "$2"
 else
     echo -e  "\033[0;31mUnable to execute the command.\033[0m"
-    echo -e  "\033[0;37mUsage: ytGetVideo [resolution] <URL>\033[0m"
+    echo -e  "\033[0;37mUsage: getVideo [resolution] <URL>\033[0m"
     exit 1
 fi
