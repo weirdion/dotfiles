@@ -1,24 +1,64 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
-function _stripMetaDataFromVideo() {
-    # shellcheck disable=SC2155
-    local extensionName=$(echo "$1" | rev | cut -d '.' -f1 | rev)
-    local newFileName="${1%.*}-new.$extensionName"
-    ffmpeg -i "$1" -map_metadata -1 \
-        -c:v copy -c:a copy -disposition:v:1 attached_pic \
-        "$newFileName" -hide_banner \
-        -loglevel error -stats && \
-    mv -v "$newFileName" "$1"
-}
+import os
+import subprocess
+import sys
+from pathlib import Path
 
-if [ "$#" -eq 1 ]; then
-    _stripMetaDataFromVideo "$1"
-elif [ "$#" -gt 1 ]; then
-    for f in "$@"; do
-        echo "*** Processing $f ***"
-        _stripMetaDataFromVideo "$f"
-    done
-else
-    echo -e  "\033[0;31mUnable to execute the command.\033[0m"
-    echo -e  "\033[0;37mUsage: stripMetaDataFromVideo videoFile.mkv\033[0m"
-fi
+
+def strip_metadata_from_video(input_file: str) -> None:
+    """
+    Strip metadata from a video file using ffmpeg
+    """
+    input_path = Path(input_file)
+    extension = input_path.suffix[1:]  # Remove the leading dot
+    new_filename = f"{input_path.stem}-tmp.{extension}"
+    new_path = input_path.parent / new_filename
+
+    ffmpeg_cmd = [
+        'ffmpeg',
+        '-i', str(input_path),
+        '-map_metadata', '-1',  # Strip all metadata
+        '-c:v', 'copy',
+        '-c:a', 'copy',
+        '-disposition:v:1', 'attached_pic',  # keep thumbnail
+        '-hide_banner',
+        '-loglevel', 'error',
+        '-stats',
+        str(new_path)
+    ]
+
+    try:
+        subprocess.run(ffmpeg_cmd, check=True)
+
+        # Replace original file with the new one
+        os.replace(str(new_path), str(input_path))
+        print(f"Renamed '{new_path}' -> '{input_path}'")
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error processing {input_file}: {str(e)}", file=sys.stderr)
+        # Clean up the temporary file if it exists
+        if new_path.exists():
+            new_path.unlink()
+        sys.exit(1)
+    except OSError as e:
+        print(f"OS error occurred: {str(e)}", file=sys.stderr)
+        if new_path.exists():
+            new_path.unlink()
+        sys.exit(1)
+
+
+def main():
+    if len(sys.argv) < 2:
+        print("\033[0;31mUnable to execute the command.\033[0m")
+        print("\033[0;37mUsage: stripMetaDataFromVideo videoFile.mkv\033[0m")
+        sys.exit(1)
+
+    # Process all input files
+    for input_file in sys.argv[1:]:
+        print(f"*** Processing {input_file} ***")
+        strip_metadata_from_video(input_file)
+
+
+if __name__ == "__main__":
+    main()

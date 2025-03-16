@@ -1,33 +1,60 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
-function _convertToMp4() {
-    local newName="${1%.*}-new.mp4"
-    local finalName="${1%.*}.mp4"
-    # b:a 128k for audio bitrate
-    # crf 23 to balance Constant Rate Factor (CRF) quality and file size
-    # preset slow for better compression
-    # movflags +faststart for better streaming support
-    ffmpeg -i "$1" \
-        -f mp4 \
-        -c:v libx264 \
-        -c:a aac \
-        -b:a 128k \
-        -crf 23 \
-        -preset slow \
-        -movflags +faststart \
-        -loglevel error -stats \
-        "$newName" -hide_banner && \
-    rm -v "$1" && mv "$newName" "$finalName"
-}
+import os
+import subprocess
+import sys
 
-if [ "$#" -eq 1 ]; then
-    _convertToMp4 "$1"
-elif [ "$#" -gt 1 ]; then
-    for f in "$@"; do
-        echo "*** Processing $f ***"
-        _convertToMp4 "$f"
-    done
-else
-    echo -e  "\033[0;31mUnable to execute the command.\033[0m"
-    echo -e  "\033[0;37mUsage: convertToMp4 source\033[0m"
-fi
+
+def convert_to_mp4(input_file):
+    # Create the new and final filenames
+    base_name = os.path.splitext(input_file)[0]
+    new_name = f"{base_name}-tmp.mp4"
+    final_name = f"{base_name}.mp4"
+
+    ffmpeg_cmd = [
+        "ffmpeg",
+        "-i", input_file,
+        "-f", "mp4",
+        "-c:v", "libx264",
+        "-c:a", "aac",
+        "-b:a", "128k",
+        "-crf", "23",  # balance Constant Rate Factor (CRF) quality and file size
+        "-preset", "slow",  # preset slow for better compression
+        "-movflags", "+faststart",  # for better streaming support
+        "-loglevel", "error",
+        "-stats",
+        "-hide_banner",
+        new_name
+    ]
+
+    try:
+        # Run the ffmpeg command
+        subprocess.run(ffmpeg_cmd, check=True)
+
+        # Remove original file and rename the new file
+        os.remove(input_file)
+        os.rename(new_name, final_name)
+        print(f"Removed '{input_file}'")
+        print(f"Renamed '{new_name}' -> '{final_name}'")
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error converting {input_file}: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+    except OSError as e:
+        print(f"OS error occurred: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+
+
+def main():
+    if len(sys.argv) < 2:
+        print("\033[0;31mUnable to execute the command.\033[0m")
+        print("\033[0;37mUsage: convertToMp4 source\033[0m")
+        sys.exit(1)
+
+    for input_file in sys.argv[1:]:
+        print(f"*** Processing {input_file} ***")
+        convert_to_mp4(input_file)
+
+
+if __name__ == "__main__":
+    main()

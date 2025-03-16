@@ -3,11 +3,12 @@
 import os
 import shutil
 
+
 def categorize_files(directory):
-    image_extensions = { '.jpg', '.jpeg', '.png', '.gif', '.heic' }
-    video_extensions = { '.mp4', '.mkv', '.avi', '.mov' }
-    archive_extensions = { '.zip', '.tar', '.gz', '.rar' }
-    iso_extensions = { '.iso' }
+    image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.heic'}
+    video_extensions = {'.mp4', '.mkv', '.avi', '.mov'}
+    archive_extensions = {'.zip', '.tar', '.gz', '.rar'}
+    iso_extensions = {'.iso'}
 
     categories = {
         'images': image_extensions,
@@ -28,6 +29,7 @@ def categorize_files(directory):
                     print(f'{filename} --> {category_dir}')
                     shutil.move(os.path.join(directory, filename), os.path.join(category_dir, filename))
                     break
+
 
 if __name__ == "__main__":
     downloads_directory = os.path.join(os.path.expanduser('~'), 'Downloads')

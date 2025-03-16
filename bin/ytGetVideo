@@ -18,7 +18,7 @@ function _ytGetVideo() {
 
 if ! command -v yt-dlp &> /dev/null; then
     echo -e "\033[0;31mError: yt-dlp is not installed.\033[0m"
-    echo -e "\033[0;37mInstall it with - breww install yt-dlp\033[0m"
+    echo -e "\033[0;37mInstall it with - brew install yt-dlp\033[0m"
     exit 1
 fi
 
