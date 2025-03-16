@@ -25,11 +25,6 @@ source "$DOTFILES_DIR/config/shell_common/exports.sh"
 source "$DOTFILES_DIR/config/shell_common/aliases.sh"
 source "$DOTFILES_DIR/config/shell_common/functions.bash"
 
-# Python
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init --path)"
-fi
-
 # NVM
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
@@ -50,3 +45,8 @@ fi
 
 # Start the gpg-agent
 gpgconf --launch gpg-agent
+
+# Python
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init - zsh)"
+fi

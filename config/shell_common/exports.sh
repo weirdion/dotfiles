@@ -28,6 +28,12 @@ export SDK_DIR="$homeDir/sdk"
 # Homebrew
 [[ $MACHINE == "Darwin" ]] && export HOMEBREW_PATH="/opt/homebrew"
 
+# Path
+if ! [[ "$PATH" =~ ${HOME}/.local/bin:${HOME}/bin:${DOTFILES_DIR}/bin: ]]
+then
+    export PATH="$HOME/.local/bin:$HOME/bin:$DOTFILES_DIR/bin:$HOMEBREW_PATH/bin:$PATH"
+fi
+
 # toolbox
 [ -d "$HOME/.toolbox" ] && export PATH=$HOME/.toolbox/bin:$PATH
 
@@ -66,10 +72,3 @@ RANCHER_HOME="$HOME/.rd"
 
 # GPG
 export GPG_TTY=$(tty)
-
-# Path
-
-if ! [[ "$PATH" =~ ${HOME}/.local/bin:${HOME}/bin:${DOTFILES_DIR}/bin: ]]
-then
-    export PATH="$HOME/.local/bin:$HOME/bin:$DOTFILES_DIR/bin:$HOMEBREW_PATH/bin:$PATH"
-fi
