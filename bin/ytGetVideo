@@ -2,16 +2,18 @@
 
 # Reference blog - https://ostechnix.com/yt-dlp-tutorial/
 
-RESOLUTION="1080"
+RESOLUTION="720"
 set +x
 
 function _ytGetVideo() {
-    local filename=$(yt-dlp --get-filename -o "%(title)s.%(ext)s" "$2" | sed 's/ /./g')
     yt-dlp -S "res:$1" \
-        --write-info-json \
+        --restrict-filenames \
         --write-sub \
-        --write-thumbnail \
-        -o "$filename" "$2"
+        --embed-thumbnail \
+        --embed-metadata \
+        --sub-lang "en" \
+        --output "%(title)s.%(ext)s" \
+        "$2"
 }
 
 if ! command -v yt-dlp &> /dev/null; then
