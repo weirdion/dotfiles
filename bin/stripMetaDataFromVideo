@@ -4,7 +4,10 @@ function _stripMetaDataFromVideo() {
     # shellcheck disable=SC2155
     local extensionName=$(echo "$1" | rev | cut -d '.' -f1 | rev)
     local newFileName="${1%.*}-new.$extensionName"
-    ffmpeg -i "$1" -map_metadata -1 -c:v copy -c:a copy "$newFileName" -hide_banner && \
+    ffmpeg -i "$1" -map_metadata -1 \
+        -c:v copy -c:a copy -disposition:v:1 attached_pic \
+        "$newFileName" -hide_banner \
+        -loglevel error -stats && \
     mv -v "$newFileName" "$1"
 }
 

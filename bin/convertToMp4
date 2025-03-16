@@ -3,7 +3,20 @@
 function _convertToMp4() {
     local newName="${1%.*}-new.mp4"
     local finalName="${1%.*}.mp4"
-    ffmpeg -i "$1" -f mp4 -vcodec libx264 -preset slow -acodec aac "$newName" -hide_banner && \
+    # b:a 128k for audio bitrate
+    # crf 23 to balance Constant Rate Factor (CRF) quality and file size
+    # preset slow for better compression
+    # movflags +faststart for better streaming support
+    ffmpeg -i "$1" \
+        -f mp4 \
+        -c:v libx264 \
+        -c:a aac \
+        -b:a 128k \
+        -crf 23 \
+        -preset slow \
+        -movflags +faststart \
+        -loglevel error -stats \
+        "$newName" -hide_banner && \
     rm -v "$1" && mv "$newName" "$finalName"
 }
 
