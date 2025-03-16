@@ -2,7 +2,7 @@
 
 # Reference blog - https://ostechnix.com/yt-dlp-tutorial/
 
-function _ytGetMusic() {
+function _getMusic() {
     local url="$1"
     yt-dlp --extract-audio \
         --restrict-filenames \
@@ -13,7 +13,7 @@ function _ytGetMusic() {
 }
 
 if [ "$#" -eq 1 ]; then
-    _ytGetMusic "$1"
+    _getMusic "$1"
 else
     echo -e  "\033[0;31mUnable to execute the command.\033[0m"
     echo -e  "\033[0;37mUsage: ytGetMusic <URL>\033[0m"

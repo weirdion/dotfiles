@@ -5,7 +5,7 @@
 RESOLUTION="720"
 set +x
 
-function _ytGetVideo() {
+function _getVideo() {
     yt-dlp -S "res:$1" \
         --restrict-filenames \
         --write-sub \
@@ -23,9 +23,9 @@ if ! command -v yt-dlp &> /dev/null; then
 fi
 
 if [ "$#" -eq 1 ]; then
-    _ytGetVideo "$RESOLUTION" "$1"
+    _getVideo "$RESOLUTION" "$1"
 elif [ "$#" -eq 2 ]; then
-    _ytGetVideo "$1" "$2"
+    _getVideo "$1" "$2"
 else
     echo -e  "\033[0;31mUnable to execute the command.\033[0m"
     echo -e  "\033[0;37mUsage: ytGetVideo [resolution] <URL>\033[0m"
