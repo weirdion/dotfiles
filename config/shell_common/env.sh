@@ -1,17 +1,17 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 DOTFILES_DIR="$HOME/workspace/dotfiles"
 
 # Do shell_work first to not allow any overrides
-local scriptDir="${$(dirname $0)%/shell_common}"
-# Source exports from shell_work
-if [ -d "$scriptDir/shell_work" ]; then
-  if [ -n "$(ls -A "$scriptDir/shell_work"/*.sh 2>/dev/null)" ]; then
-    for e in "$scriptDir/shell_work"/*.sh; do
-      echo "====> Sourcing work export $e"
-      source "$e"
-    done
-  fi
+workScriptDir="$DOTFILES_DIR/config/shell_work"
+if [ -d "$workScriptDir" ]; then
+  find "$workScriptDir" -name '*.sh' | while read -r e; do
+    [ -e "$e" ] || continue
+    echo "====> Sourcing work export $e"
+    # intentionally non-constant
+    # shellcheck disable=SC1090
+    source "$e"
+  done
 fi
 
 if [ "$MACHINE" = "Darwin" ]; then
@@ -35,7 +35,7 @@ fi
 
 # Mac only path_helper
 if [[ -x /usr/libexec/path_helper ]]; then
-  eval $(/usr/libexec/path_helper -s)
+  eval "$(/usr/libexec/path_helper -s)"
 fi
 
 # Linux HomeBrew helper

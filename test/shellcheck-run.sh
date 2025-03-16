@@ -10,6 +10,9 @@ shellcheck --shell=bash -x --exclude=SC2148,SC1090,SC1091 config/bash/.bashrc
 echo
 echo "Running check on bin dir"
 # SC1071: Ignore zsh script
-shellcheck --shell=bash --exclude=SC1071 bin/*
+find . -type f \
+  \( -exec grep -l '^#!/usr/bin/env bash' {} \; \
+  -o -exec grep -l '^#!/usr/bin/env sh' {} \; \) | \
+  xargs shellcheck --shell=bash -x --exclude=SC2148,SC1090,SC1091
 
 exit 0

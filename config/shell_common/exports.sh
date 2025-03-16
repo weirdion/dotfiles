@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # export BROWSER=/usr/bin/brave-browser-stable
 export EDITOR=/usr/bin/vim
@@ -23,7 +23,7 @@ esac
 export MACHINE
 
 # SDK and programming stuff
-export SDK_DIR="$homeDir/sdk"
+export SDK_DIR="$HOME/sdk"
 
 # Homebrew
 [[ $MACHINE == "Darwin" ]] && export HOMEBREW_PATH="/opt/homebrew"
@@ -71,4 +71,5 @@ RANCHER_HOME="$HOME/.rd"
 [ -d "$RANCHER_HOME" ] && ! [[ $PATH =~ ${RANCHER_HOME}/bin ]] && export PATH="${RANCHER_HOME}/bin:$PATH"
 
 # GPG
+# shellcheck disable=SC2155
 export GPG_TTY=$(tty)
