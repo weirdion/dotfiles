@@ -5,16 +5,16 @@ import shutil
 
 
 def categorize_files(directory):
-    image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.heic'}
-    video_extensions = {'.mp4', '.mkv', '.avi', '.mov'}
-    archive_extensions = {'.zip', '.tar', '.gz', '.rar'}
-    iso_extensions = {'.iso'}
+    image_extensions = {".jpg", ".jpeg", ".png", ".gif", ".heic"}
+    video_extensions = {".mp4", ".mkv", ".avi", ".mov"}
+    archive_extensions = {".zip", ".tar", ".gz", ".rar"}
+    iso_extensions = {".iso"}
 
     categories = {
-        'images': image_extensions,
-        'videos': video_extensions,
-        'archives': archive_extensions,
-        'iso': iso_extensions
+        "images": image_extensions,
+        "videos": video_extensions,
+        "archives": archive_extensions,
+        "iso": iso_extensions,
     }
 
     for filename in os.listdir(directory):
@@ -24,13 +24,16 @@ def categorize_files(directory):
                 if file_ext in extensions:
                     category_dir = os.path.join(directory, category)
                     if not os.path.exists(category_dir):
-                        print(f'+ new dir - {category_dir}')
+                        print(f"+ new dir - {category_dir}")
                         os.makedirs(category_dir)
-                    print(f'{filename} --> {category_dir}')
-                    shutil.move(os.path.join(directory, filename), os.path.join(category_dir, filename))
+                    print(f"{filename} --> {category_dir}")
+                    shutil.move(
+                        os.path.join(directory, filename),
+                        os.path.join(category_dir, filename),
+                    )
                     break
 
 
 if __name__ == "__main__":
-    downloads_directory = os.path.join(os.path.expanduser('~'), 'Downloads')
+    downloads_directory = os.path.join(os.path.expanduser("~"), "Downloads")
     categorize_files(downloads_directory)

@@ -13,18 +13,27 @@ def convert_to_mp4(input_file):
 
     ffmpeg_cmd = [
         "ffmpeg",
-        "-i", input_file,
-        "-f", "mp4",
-        "-c:v", "libx264",
-        "-c:a", "aac",
-        "-b:a", "128k",
-        "-crf", "23",  # balance Constant Rate Factor (CRF) quality and file size
-        "-preset", "slow",  # preset slow for better compression
-        "-movflags", "+faststart",  # for better streaming support
-        "-loglevel", "error",
+        "-i",
+        input_file,
+        "-f",
+        "mp4",
+        "-c:v",
+        "libx264",
+        "-c:a",
+        "aac",
+        "-b:a",
+        "128k",
+        "-crf",
+        "23",  # balance Constant Rate Factor (CRF) quality and file size
+        "-preset",
+        "slow",  # preset slow for better compression
+        "-movflags",
+        "+faststart",  # for better streaming support
+        "-loglevel",
+        "error",
         "-stats",
         "-hide_banner",
-        new_name
+        new_name,
     ]
 
     try:

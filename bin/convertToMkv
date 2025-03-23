@@ -18,16 +18,23 @@ def convert_to_mkv(input_file: str) -> None:
 
     ffmpeg_cmd = [
         "ffmpeg",
-        "-i", str(input_path),
-        "-f", "matroska",
-        "-vcodec", "libx264",
-        "-preset", "slow",
-        "-acodec", "libvorbis",
-        "-b:a", "128k",
+        "-i",
+        str(input_path),
+        "-f",
+        "matroska",
+        "-vcodec",
+        "libx264",
+        "-preset",
+        "slow",
+        "-acodec",
+        "libvorbis",
+        "-b:a",
+        "128k",
         "-hide_banner",
-        "-loglevel", "error",
+        "-loglevel",
+        "error",
         "-stats",
-        str(new_path)
+        str(new_path),
     ]
 
     try:

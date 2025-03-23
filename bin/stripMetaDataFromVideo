@@ -16,16 +16,22 @@ def strip_metadata_from_video(input_file: str) -> None:
     new_path = input_path.parent / new_filename
 
     ffmpeg_cmd = [
-        'ffmpeg',
-        '-i', str(input_path),
-        '-map_metadata', '-1',  # Strip all metadata
-        '-c:v', 'copy',
-        '-c:a', 'copy',
-        '-disposition:v:1', 'attached_pic',  # keep thumbnail
-        '-hide_banner',
-        '-loglevel', 'error',
-        '-stats',
-        str(new_path)
+        "ffmpeg",
+        "-i",
+        str(input_path),
+        "-map_metadata",
+        "-1",  # Strip all metadata
+        "-c:v",
+        "copy",
+        "-c:a",
+        "copy",
+        "-disposition:v:1",
+        "attached_pic",  # keep thumbnail
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-stats",
+        str(new_path),
     ]
 
     try:

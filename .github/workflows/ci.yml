@@ -27,8 +27,10 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install pylint
-      run: pip install pylint
+    - name: Install poetry
+      run: pip install poetry && poetry install --no-root
 
-    - name: Run pylint
-      run: pylint **/*.py
+    - name: Run black
+      env:
+        CI_CHECK: 1
+      run: poetry run pyrhon3 test/python-lint.py
