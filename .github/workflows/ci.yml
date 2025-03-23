@@ -33,4 +33,4 @@ jobs:
     - name: Run black
       env:
         CI_CHECK: 1
-      run: poetry run pyrhon3 test/python-lint.py
+      run: poetry run python3 test/python-lint.py
