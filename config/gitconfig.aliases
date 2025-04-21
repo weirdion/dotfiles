@@ -10,48 +10,56 @@
 #
 
 [alias]
-    # Abort rebase
-    abort = rebase --abort
-    # List all the aliases
+    # Essential Shorthands
+    s = status                  # Show working tree status
+    co = checkout               # Switch branches or restore files
+    br = branch                 # List, create, or delete branches
+    brs = branches              # List all local and remote branches
+    branches = branch -a        # List all local and remote branches
+    c = commit                  # Regular commit
+    cm = commit -m              # Commit with inline message
+    ca = amend                  # Amend the last commit
+    can = amend --no-edit       # Amend the last commit with no message edit
+    amend = commit --amend      # Amend the last commit
+
+    # Workflow Boosters
+    grepl = grep -E --line-number   # Search repo with regex and line numbers
+    discard = checkout --           # Discard local changes to a file
+    untrack = rm --cached           # Remove file from version control but keep it locally
+    abort = rebase --abort          # Abort an in-progress rebase
+    uncommit = reset --soft HEAD^   # Undo last commit but keep changes staged
+    unstage = reset -q HEAD --      # Remove file from staging area
+    showRef = show-ref --abbrev     # Show refs in abbreviated format
+    peeps = shortlog -n -e -s       # List contributors by number of commits
+    # List all defined aliases
     aliases = "!git config -l | grep alias | cut -c 7-"
-    # Add all tracked files and amend commit
-    amend = commit -a --amend
-    # Lists all branches including remote branches
-    branches = branch -a
-    # Update local branch, if unstaged changes present, stash pull (with rebase) and unstash
-    branchUpdate = ![[ -z $(git status --porcelain -uno) ]] && git pull --rebase || git stash && git pull --rebase && git stash pop
-    # Discard changes to a file
-    discard = checkout --
-    # Show information on the remote, if no argument passed use origin
-    info  = "!sh -c '[ $# -ne 0 ] && git remote show $1 && exit 0 || [ $# -eq 0 ] && git remote show origin && exit 0' -"
-    # List all files, find the one that matches input
-    find = "!git ls-files | grep -i"
-    # Print log in one line graph format
-    logOneLine = log --graph --decorate --pretty=oneline --abbrev-commit
-    # Print log in one line graph format with all option
-    logOneLineAll = log --graph --decorate --pretty=oneline --abbrev-commit --all
-    # Print log in custom format (close to oneline) along with author and date
-    logPretty = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-    # Parse authors in entire log, count for unique and print in desc order of contributions
-    peeps = !git log --pretty=format:%aN | sort | uniq -c | sort -rn
-    # Parse authors files, and check for lines of code per author, desc order
-    peepsLoC = !git ls-files | xargs -n1 git blame --line-porcelain | sed -n 's/^author //p' | sort -f | uniq -ic | sort -nr
-    # Cleaner reflog
-    reflogAbbrev = reflog --abbrev --decorate
-    # Show references in abbreviated format
-    showRef = show-ref --abbrev
-    # List all the stashes
-    stashes = stash list
-    # Reset HEAD and un-stage all staged files
-    unStageAll = reset -q HEAD
-    # Unstage a file
-    unStage = reset -q HEAD --
-    # Diff between two branches
-    diffBranches = "!f() { echo "Showing ${1}..${2}"; \
-        git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset  %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative "$1".."$2"; }; f"
+    # Simple one-liner commit graph
+    lo = log --graph --decorate --pretty=oneline --abbrev-commit
 
+    # Power Tools
+    # Print current Git identity
+    whoami = "!git config user.name && git config user.email"
+    # Show remote info (defaults to origin)
+    info = "!sh -c '[ $# -ne 0 ] && git remote show $1 && exit 0 || \
+        [ $# -eq 0 ] && git remote show origin && exit 0' -"
+    # Colorful log with author and relative date
+    logPretty = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset \
+        %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+    # Count lines of code per author
+    peepsLoC = "!git ls-files | xargs -n1 git blame --line-porcelain | sed \
+        -n 's/^author //p' | sort -f | uniq -ic | sort -nr"
+    # File & Branch Helpers
+    find = "!git ls-files | grep -i" # Search files tracked by git (case-insensitive)
+    # Visualize difference between two branches
+    diffBranches = "!f() { echo \"Showing ${1}..${2}\"; git log --graph \
+        --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset  %s %Cgreen(%cr)%Creset' \
+        --abbrev-commit --date=relative \"$1\"..\"$2\"; }; f"
 
-    #TODO
-    # diffWithBranch = "!f() { currentBranch=$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD)); git diff HEAD "${1:-$currentBranch}"}; f"
-    # TODO 2
-    # rewriteHistory = "filter-branch --tree-filter "sed  -i -e 's/oldWord/newWord/g' fileName" HEAD
+    # Danger Zone
+    scrub-secret = "!f() { \
+        echo '🚨 Scrubbing history for secret...'; \
+        git filter-branch --force --tree-filter \
+        \"if [ -f $2 ]; then sed -i '' -e 's/$1/REDACTED/g' $2; fi\" \
+        --tag-name-filter cat -- --all; \
+        echo '✅ History scrub complete. Don’t forget to force-push!'; \
+    }; f"
