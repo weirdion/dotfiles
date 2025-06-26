@@ -1,51 +1,91 @@
-# Dotfiles
+# My Dotfiles
 
-This repository contains my personal configuration files and setup scripts for managing my development environments.
+Personal dev environment setup that I use across machines. Nothing fancy, just automates the boring stuff so I can get coding faster.
 
+## What's in here
 
-## Folder Structure
+- **Shell setup**: Zsh with Oh My Zsh, Powerlevel10k theme, and the usual productivity plugins
+- **Git config**: Bunch of useful aliases and GPG signing setup
+- **Utility scripts**: Random tools I've built over time for downloading videos, checking packages, etc.
+- **Cross-platform**: Works on both macOS and Linux (And no, windows doesn't count as a developer machine)
+
+## Structure
 
 ```
 dotfiles/
-├── bin/ # Custom scripts and utilities
+├── bin/                    # My custom scripts
+│   ├── getVideo           # yt-dlp wrapper
+│   ├── packageCheck       # Check Python package security
+│   └── ...                # Other random utilities
 ├── config/
-│ ├── bash/ # Bash-specific configuration files
-│ ├── zsh/ # Zsh-specific configuration files
-│ └── .vimrc # Vim configuration file
-├── test/ # Scripts for linting and testing
-│ ├── python-lint.py # Linter for Python scripts with shebang
-│ └── shellcheck-run.sh # ShellCheck script for linting shell
-├── install # Main installation script
-├── uninstall # Main uninstallation script
-└── .github/ # GitHub Actions workflow for CI
+│   ├── zsh/               # Zsh configs and themes
+│   ├── bash/              # Bash fallback
+│   ├── shell_common/      # Shared stuff (aliases, functions)
+│   ├── shell_work/        # Work-specific configs (empty by default)
+│   └── gitconfig.aliases  # Git shortcuts I actually use
+├── test/                  # Linting scripts
+├── install                # Python installer script
+└── uninstall              # Clean removal
 ```
 
-## What This Repository Sets Up
+## Installation
 
-1. **Zsh Configuration**:
-    - Installs [Oh My Zsh](https://ohmyz.sh/).
-    - Sets up the Powerlevel10k theme.
-    - Installs Zsh plugins:
-        - `zsh-autosuggestions`
-        - `zsh-completions`
-        - `zsh-history-substring-search`
-        - `zsh-syntax-highlighting`
-    - Configures `.zshrc` and `.zshenv`.
+Just clone and run the installer:
 
-2. **Bash Configuration**:
-    - Configures `.bashrc`.
+```bash
+git clone <this-repo> ~/workspace/dotfiles
+cd ~/workspace/dotfiles
+./install
+```
 
-3. **Vim Configuration**:
-    - Sets up `.vimrc` for Vim.
+The installer will:
+- Back up your existing configs (adds `.backup` suffix)
+- Install Oh My Zsh and plugins
+- Set up symlinks for all the dotfiles
+- Configure Git (it'll ask for your email)
+- Set up GPG signing if you have it
 
-4. **Custom Scripts**:
-    - Includes utility scripts in the `bin/` directory.
+## What you get
 
-5. **Git Configuration**:
-    - Configures Git with user details, aliases, and GPG signing.
-    - GPG signing only works if
-        - GPG2 is installed
-        - The email associated in user details is set up in GPG2 already.
+**Shell improvements:**
+- Smart autocompletion and syntax highlighting
+- History search that actually works
+- A decent-looking prompt (Powerlevel10k)
 
-6. **Symlinks**:
-    - Creates symlinks for configuration files and directories in the home directory.
+**Git shortcuts** (just a few favorites):
+```bash
+git s          # status
+git lo         # pretty log
+git peeps      # who's been committing
+git whoami     # current git identity
+```
+
+**Random utilities:**
+```bash
+getVideo <url>           # Download videos with sane defaults
+packageCheck <package>   # Check Python package security via Snyk
+```
+
+## Removal
+
+If you want to undo everything:
+
+```bash
+./uninstall
+```
+
+This removes symlinks and restores your original files.
+
+## Customization
+
+- Add work stuff to `config/shell_work/` (git ignored)
+- Platform-specific aliases go in `config/shell_common/darwin.aliases.sh` or `linux.aliases.sh`
+- Toss new scripts in `bin/` (included in path)
+
+## Requirements
+
+- Python 3.13+ (for the installer)
+- Git
+- GPG (optional, for commit signing)
+
+That's about it. Feel free to fork and adapt for your own setup.
