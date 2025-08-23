@@ -27,6 +27,7 @@ INSTALL_FILE_DICT = {
     "config/zsh/.zshenv": ".zshenv",
     "config/zsh/.zshrc": ".zshrc",
     "config/.vimrc": ".vimrc",
+    ".editorconfig": ".editorconfig",
 }
 # Convert INSTALL_FILE_DICT to be absolute paths
 # Keys are assumed are relative to current directory, values are assumed to be in HOME
