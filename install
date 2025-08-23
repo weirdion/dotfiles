@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import pathlib
 import platform
-import sys
 
 from subprocess import run, PIPE
 
@@ -27,7 +27,7 @@ INSTALL_FILE_DICT = {
     "config/zsh/.zshenv": ".zshenv",
     "config/zsh/.zshrc": ".zshrc",
     "config/.vimrc": ".vimrc",
-    ".editorconfig": ".editorconfig",
+    "config/.editorconfig": ".editorconfig",
 }
 # Convert INSTALL_FILE_DICT to be absolute paths
 # Keys are assumed are relative to current directory, values are assumed to be in HOME
@@ -321,27 +321,53 @@ def configure_gpg():
         agent_file.write_text("pinentry-program /usr/bin/pinentry-tty\n", encoding="utf-8", newline="\n")
 
 
-def main():
+def parse_args():
+    parser = argparse.ArgumentParser(description="Install/setup utility")
+    parser.add_argument("--zsh", action="store_true", help="Setup oh-my-zsh, plugins and themes")
+    parser.add_argument("--symlinks", action="store_true", help="Create symlinks for dotfiles and bin")
+    parser.add_argument("--gpg", action="store_true", help="Configure GPG agent and pinentry")
+    parser.add_argument("--git", action="store_true", help="Configure Git and GPG signing")
+    parser.add_argument("--all", action="store_true", help="Run all tasks (default if no flags are provided)")
+    return parser.parse_args()
+
+
+def main(args):
     """
-    Function that does all the orchestration between functions.
-    TODO: Configure this into a menu, with auto option to go through expected flow.
+    Orchestrate tasks based on CLI flags.
+    By default (no flags), runs all tasks.
     """
-    check_if_dest_exists()
+    selected = any([args.zsh, args.symlinks, args.gpg, args.git, args.all])
+    run_all = args.all or not selected
 
-    _print_title("\nSetting up oh-my-zsh, plugins and themes")
-    do_setup_zsh()
+    tasks_run = False
 
-    _print_title("\nCreating symlinks")
-    do_symlinks()
+    if run_all or args.zsh:
+        _print_title("\nSetting up oh-my-zsh, plugins and themes")
+        do_setup_zsh()
+        tasks_run = True
 
-    _print_title("\nConfiguring gpg")
-    configure_gpg()
+    if run_all or args.symlinks:
+        check_if_dest_exists()
+        _print_title("\nCreating symlinks")
+        do_symlinks()
+        tasks_run = True
 
-    _print_title("\nConfiguring git-config")
-    configure_git()
+    if run_all or args.gpg:
+        _print_title("\nConfiguring gpg")
+        configure_gpg()
+        tasks_run = True
 
-    _print_info(f"\nAll done! {ICON_CHECK_MARK}")
+    if run_all or args.git:
+        _print_title("\nConfiguring git-config")
+        configure_git()
+        tasks_run = True
+
+    if tasks_run:
+        _print_info(f"\nAll done! {ICON_CHECK_MARK}")
+    else:
+        _print_warning("No tasks selected. Use --all or one of --zsh/--symlinks/--gpg/--git.")
 
 
 if __name__ == "__main__":
-    main()
+    args = parse_args()
+    main(args)

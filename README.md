@@ -22,7 +22,8 @@ dotfiles/
 │   ├── bash/              # Bash fallback
 │   ├── shell_common/      # Shared stuff (aliases, functions)
 │   ├── shell_work/        # Work-specific configs (empty by default)
-│   └── gitconfig.aliases  # Git shortcuts I actually use
+│   ├── gitconfig.aliases  # Git shortcuts I actually use
+│   └── .editorconfig      # editorconfig for IDEs to pick up globally
 ├── test/                  # Linting scripts
 ├── install                # Python installer script
 └── uninstall              # Clean removal
@@ -44,6 +45,24 @@ The installer will:
 - Set up symlinks for all the dotfiles
 - Configure Git (it'll ask for your email)
 - Set up GPG signing if you have it
+
+### To run the installer selectively
+
+```shell
+> ./install -h
+
+usage: install [-h] [--zsh] [--symlinks] [--gpg] [--git] [--all]
+
+Install/setup utility
+
+options:
+  -h, --help  show this help message and exit
+  --zsh       Setup oh-my-zsh, plugins and themes
+  --symlinks  Create symlinks for dotfiles and bin
+  --gpg       Configure GPG agent and pinentry
+  --git       Configure Git and GPG signing
+  --all       Run all tasks (default if no flags are provided)
+```
 
 ## What you get
 
