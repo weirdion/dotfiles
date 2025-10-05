@@ -2,7 +2,7 @@
 
 # Reference blog - https://ostechnix.com/yt-dlp-tutorial/
 
-RESOLUTION="720"
+RESOLUTION="480"
 set +x
 
 function _getVideo() {

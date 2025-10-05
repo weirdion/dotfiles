@@ -70,6 +70,12 @@ RANCHER_HOME="$HOME/.rd"
 [ -d "$RANCHER_HOME" ] && export RANCHER_HOME="$RANCHER_HOME"
 [ -d "$RANCHER_HOME" ] && ! [[ $PATH =~ ${RANCHER_HOME}/bin ]] && export PATH="${RANCHER_HOME}/bin:$PATH"
 
+# JDK
+export JAVA_HOME="$HOMEBREW_PATH/opt/openjdk"
+[ -d "$JAVA_HOME" ] && export JAVA_HOME="$JAVA_HOME"
+[ -d "$JAVA_HOME" ] && ! [[ $PATH =~ ${JAVA_HOME}/bin ]] && export PATH="${JAVA_HOME}/bin:$PATH"
+
+
 # GPG
 # shellcheck disable=SC2155
 export GPG_TTY=$(tty)
