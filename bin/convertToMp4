@@ -13,24 +13,22 @@ def convert_to_mp4(input_file):
 
     ffmpeg_cmd = [
         "ffmpeg",
-        "-i",
-        input_file,
-        "-f",
-        "mp4",
-        "-c:v",
-        "libx264",
-        "-c:a",
-        "aac",
-        "-b:a",
-        "128k",
-        "-crf",
-        "23",  # balance Constant Rate Factor (CRF) quality and file size
-        "-preset",
-        "slow",  # preset slow for better compression
-        "-movflags",
-        "+faststart",  # for better streaming support
-        "-loglevel",
-        "error",
+        "-i", input_file,
+        "-f", "mp4",
+        "-c:v", "h264_videotoolbox", # libx264 for H.264 encoding, h264_videotoolbox for apple silicon
+        # "-b:v", "6M", # target video bitrate
+        "-c:a", "aac",
+        "-b:a", "128k", # target audio bitrate
+        #"-ar", "48k", # audio sample rate
+        "-ac", "2", # number of audio channels
+        "-crf", "23",  # balance Constant Rate Factor (CRF) quality and file size
+        "-preset", "slow",  # preset slow for better compression
+        "-movflags", "+faststart",  # for better streaming support
+        "-map", "0:v",  # map video stream
+        "-map", "0:a?",  # map audio stream if present
+        "-map_metadata", "-1",  # remove metadata
+        "-map_chapters", "-1",  # remove chapters
+        "-loglevel", "error",
         "-stats",
         "-hide_banner",
         new_name,
