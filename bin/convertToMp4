@@ -11,18 +11,25 @@ def convert_to_mp4(input_file):
     new_name = f"{base_name}-tmp.mp4"
     final_name = f"{base_name}.mp4"
 
-    ffmpeg_cmd = [
-        "ffmpeg",
-        "-i", input_file,
-        "-f", "mp4",
-        "-c:v", "h264_videotoolbox", # libx264 for H.264 encoding, h264_videotoolbox for apple silicon
-        # "-b:v", "6M", # target video bitrate
+    _base_command = ["ffmpeg", "-y", "-i", input_file]
+
+    if sys.platform == "darwin":
+        _encoder_opts = [
+            "-c:v", "h264_videotoolbox",  # hardware-accelerated H.264 encoding on macOS
+            "-q:v", "60",  # quality 0-100, ~60 (higher = better quality)
+        ]
+    else:
+        _encoder_opts = [
+            "-c:v", "libx264",
+            "-crf", "23", # balance Constant Rate Factor (CRF) quality and file size
+            "-preset", "slow", # preset slow for better compression
+        ]
+
+    common_command_end = [
         "-c:a", "aac",
-        "-b:a", "128k", # target audio bitrate
-        #"-ar", "48k", # audio sample rate
-        "-ac", "2", # number of audio channels
-        "-crf", "23",  # balance Constant Rate Factor (CRF) quality and file size
-        "-preset", "slow",  # preset slow for better compression
+        "-b:a", "128k",  # target audio bitrate
+        "-ar", "48k",  # audio sample rate
+        "-ac", "2",  # number of audio channels
         "-movflags", "+faststart",  # for better streaming support
         "-map", "0:v",  # map video stream
         "-map", "0:a?",  # map audio stream if present
@@ -33,6 +40,8 @@ def convert_to_mp4(input_file):
         "-hide_banner",
         new_name,
     ]
+
+    ffmpeg_cmd = _base_command + _encoder_opts + common_command_end
 
     try:
         # Run the ffmpeg command
