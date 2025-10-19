@@ -14,17 +14,20 @@ def convert_to_mp4(input_file):
     _base_command = ["ffmpeg", "-y", "-i", input_file]
 
     if sys.platform == "darwin":
+        # fmt: off
         _encoder_opts = [
             "-c:v", "h264_videotoolbox",  # hardware-accelerated H.264 encoding on macOS
             "-q:v", "60",  # quality 0-100, ~60 (higher = better quality)
         ]
     else:
+        # fmt: off
         _encoder_opts = [
             "-c:v", "libx264",
             "-crf", "23", # balance Constant Rate Factor (CRF) quality and file size
             "-preset", "slow", # preset slow for better compression
         ]
 
+    # fmt: off
     common_command_end = [
         "-c:a", "aac",
         "-b:a", "128k",  # target audio bitrate
