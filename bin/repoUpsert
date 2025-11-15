@@ -1,4 +1,4 @@
-#!/usr/bin/env /Users/ankitpatterson/workspace/dotfiles/.venv/bin/python3
+#!/usr/bin/env python3
 
 import argparse
 import shutil
@@ -31,20 +31,33 @@ def parse_args() -> argparse.Namespace:
         help="Path to the local repository directory (default: current directory)",
     )
     parser.add_argument(
+        "-v",
         "--visibility",
         choices=["public", "private"],
         default="private",
         help="Visibility for the repositories that will be created if missing",
     )
     parser.add_argument(
+        "-b",
         "--branch",
         default="main",
         help="Default branch to set when creating new repositories",
     )
     parser.add_argument(
+        "-r",
         "--remote",
         default="origin",
         help="Git remote name to configure (default: origin)",
+    )
+    parser.add_argument(
+        "-f",
+        "--fetch-preference",
+        choices=["gh", "github", "gl", "gitlab"],
+        default="github",
+        help=(
+            "Preferred remote host to use for the fetch URL when configuring the git remote "
+            "(default: github)"
+        ),
     )
     parser.add_argument(
         "--namespace",
@@ -85,6 +98,15 @@ def run_command(
     return result
 
 
+def resolve_fetch_preference(
+    preference: str, github_url: str, gitlab_url: str
+) -> tuple[str, str]:
+    normalized = preference.lower()
+    if normalized in {"gl", "gitlab"}:
+        return gitlab_url, "GitLab"
+    return github_url, "GitHub"
+
+
 def confirm_plan(
     *,
     repo_name: str,
@@ -95,6 +117,8 @@ def confirm_plan(
     remote: str,
     github_url: str,
     gitlab_url: str,
+    fetch_target_label: str,
+    fetch_target_url: str,
     github_exists: bool,
     gitlab_exists: bool,
     local_git_exists: bool,
@@ -108,6 +132,7 @@ def confirm_plan(
     print(f"  Git remote name : {remote}")
     print(f"  Namespace       : {namespace}")
     print(f"  Repository name : {repo_name}")
+    print(f"  Fetch target    : {fetch_target_label} ({fetch_target_url})")
     print(f"  GitHub target   : {github_url} ({'exists' if github_exists else 'will create'})")
     if not github_exists:
         print(f"    - Visibility  : {visibility}")
@@ -217,6 +242,7 @@ def inspect_remote_state(
     github_url: str,
     gitlab_url: str,
     has_git_repo: bool,
+    expected_fetch_url: str,
 ) -> dict:
     state = {
         "inspectable": has_git_repo,
@@ -225,6 +251,7 @@ def inspect_remote_state(
         "has_github_push": False,
         "has_gitlab_push": False,
         "fetch_url": None,
+        "expected_fetch_url": expected_fetch_url,
     }
     if not has_git_repo:
         return state
@@ -236,9 +263,9 @@ def inspect_remote_state(
     )
     if fetch_result.returncode == 0:
         state["remote_defined"] = True
-        fetch_url = fetch_result.stdout.strip()
-        state["fetch_url"] = fetch_url
-        state["fetch_matches"] = fetch_url == github_url
+        current_fetch_url = fetch_result.stdout.strip()
+        state["fetch_url"] = current_fetch_url
+        state["fetch_matches"] = current_fetch_url == expected_fetch_url
 
     push_urls = get_push_urls(repo_path, remote)
     state["has_github_push"] = github_url in push_urls
@@ -247,16 +274,21 @@ def inspect_remote_state(
 
 
 def ensure_remote_configuration(
-    repo_path: Path, remote: str, github_url: str, gitlab_url: str
+    repo_path: Path,
+    remote: str,
+    github_url: str,
+    gitlab_url: str,
+    fetch_url: str,
 ) -> None:
     result = run_command(["git", "remote"], cwd=repo_path, check=False)
     remotes = {line.strip() for line in result.stdout.splitlines() if line.strip()}
     if remote not in remotes:
-        print(f"Adding git remote '{remote}' with fetch URL {github_url}.")
-        run_command(["git", "remote", "add", remote, github_url], cwd=repo_path)
+        print(f"Adding git remote '{remote}' with fetch URL {fetch_url}.")
+        run_command(["git", "remote", "add", remote, fetch_url], cwd=repo_path)
     else:
-        print(f"Setting fetch URL for remote '{remote}' to {github_url}.")
-        run_command(["git", "remote", "set-url", remote, github_url], cwd=repo_path)
+        if fetch_url:
+            print(f"Setting fetch URL for remote '{remote}' to {fetch_url}.")
+            run_command(["git", "remote", "set-url", remote, fetch_url], cwd=repo_path)
 
     existing_push_urls = get_push_urls(repo_path, remote)
     if github_url not in existing_push_urls:
@@ -282,9 +314,11 @@ def main() -> None:
 
     repo_name = args.name or repo_path.name
     namespace = args.namespace
+
     slug = f"{namespace}/{repo_name}"
     github_url = f"git@{GITHUB_HOST}:{slug}.git"
     gitlab_url = f"git@{GITLAB_HOST}:{slug}.git"
+    fetch_url, fetch_label = resolve_fetch_preference(args.fetch_preference, github_url, gitlab_url)
 
     for binary in ("git", "gh", "glab"):
         ensure_cli_available(binary)
@@ -293,7 +327,9 @@ def main() -> None:
     gitlab_exists = gitlab_repo_exists(slug)
     local_git_exists = (repo_path / ".git").exists()
     remote_status = inspect_remote_state(
-        repo_path, args.remote, github_url, gitlab_url, local_git_exists
+        repo_path, args.remote,
+        github_url, gitlab_url, local_git_exists,
+        fetch_url
     )
 
     actions: List[str] = []
@@ -308,11 +344,11 @@ def main() -> None:
 
     if not remote_status["remote_defined"]:
         actions.append(
-            f"Add remote '{args.remote}' pointing to {github_url} and configure pushes to both hosts"
+            f"Add remote '{args.remote}' pointing to {fetch_label} and configure pushes to both hosts"
         )
     else:
         if not remote_status["fetch_matches"]:
-            actions.append(f"Set fetch URL for remote '{args.remote}' to {github_url}")
+            actions.append(f"Set fetch URL for remote '{args.remote}' to {fetch_label}")
         if not remote_status["has_github_push"]:
             actions.append(f"Ensure remote '{args.remote}' pushes to GitHub")
         if not remote_status["has_gitlab_push"]:
@@ -327,6 +363,8 @@ def main() -> None:
         remote=args.remote,
         github_url=github_url,
         gitlab_url=gitlab_url,
+        fetch_target_label=fetch_label,
+        fetch_target_url=fetch_url,
         github_exists=github_exists,
         gitlab_exists=gitlab_exists,
         local_git_exists=local_git_exists,
@@ -342,7 +380,7 @@ def main() -> None:
     ensure_local_repo(repo_path, args.branch)
     ensure_github_repo(slug, args.visibility, github_exists)
     ensure_gitlab_repo(slug, args.visibility, args.branch, gitlab_exists)
-    ensure_remote_configuration(repo_path, args.remote, github_url, gitlab_url)
+    ensure_remote_configuration(repo_path, args.remote, github_url, gitlab_url, fetch_url)
     print("Repository configuration complete.")
 
 
