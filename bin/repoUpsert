@@ -1,0 +1,350 @@
+#!/usr/bin/env /Users/ankitpatterson/workspace/dotfiles/.venv/bin/python3
+
+import argparse
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+from typing import List, Optional
+
+
+GITHUB_HOST = "github.com"
+GITLAB_HOST = "gitlab.com"
+USERNAME = "weirdion"
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Ensure a repository exists for the same namespace on GitHub and GitLab, "
+            "and configure the local git remote to push to both."
+        )
+    )
+    parser.add_argument(
+        "name",
+        nargs="?",
+        help="Repository name without the namespace (default: current directory name)",
+    )
+    parser.add_argument(
+        "--path",
+        default=".",
+        help="Path to the local repository directory (default: current directory)",
+    )
+    parser.add_argument(
+        "--visibility",
+        choices=["public", "private"],
+        default="private",
+        help="Visibility for the repositories that will be created if missing",
+    )
+    parser.add_argument(
+        "--branch",
+        default="main",
+        help="Default branch to set when creating new repositories",
+    )
+    parser.add_argument(
+        "--remote",
+        default="origin",
+        help="Git remote name to configure (default: origin)",
+    )
+    parser.add_argument(
+        "--namespace",
+        default=USERNAME,
+        help="Namespace/username to use on both GitHub and GitLab (default: weirdion)",
+    )
+    parser.add_argument(
+        "-y",
+        "--yes",
+        action="store_true",
+        help="Skip the confirmation prompt",
+    )
+    return parser.parse_args()
+
+
+def ensure_cli_available(binary: str) -> None:
+    if shutil.which(binary) is None:
+        print(f"Required CLI '{binary}' is not available in PATH.", file=sys.stderr)
+        sys.exit(1)
+
+
+def run_command(
+    command: List[str], cwd: Optional[Path] = None, check: bool = True
+) -> subprocess.CompletedProcess:
+    result = subprocess.run(
+        command,
+        cwd=str(cwd) if cwd else None,
+        text=True,
+        capture_output=True,
+    )
+    if check and result.returncode != 0:
+        raise subprocess.CalledProcessError(
+            result.returncode,
+            command,
+            output=result.stdout,
+            stderr=result.stderr,
+        )
+    return result
+
+
+def confirm_plan(
+    *,
+    repo_name: str,
+    repo_path: Path,
+    namespace: str,
+    visibility: str,
+    branch: str,
+    remote: str,
+    github_url: str,
+    gitlab_url: str,
+    github_exists: bool,
+    gitlab_exists: bool,
+    local_git_exists: bool,
+    remote_status: dict,
+    actions: List[str],
+    skip_prompt: bool,
+) -> bool:
+    print("Planned configuration:")
+    print(f"  Local directory : {repo_path}")
+    print(f"  Git repo exists : {'yes' if local_git_exists else 'no'}")
+    print(f"  Git remote name : {remote}")
+    print(f"  Namespace       : {namespace}")
+    print(f"  Repository name : {repo_name}")
+    print(f"  GitHub target   : {github_url} ({'exists' if github_exists else 'will create'})")
+    if not github_exists:
+        print(f"    - Visibility  : {visibility}")
+        print(f"    - Default br. : {branch}")
+    print(f"  GitLab target   : {gitlab_url} ({'exists' if gitlab_exists else 'will create'})")
+    if not gitlab_exists:
+        print(f"    - Visibility  : {visibility}")
+        print(f"    - Default br. : {branch}")
+
+    if not remote_status["inspectable"]:
+        print(f"  Remote '{remote}' : unavailable (git repository not initialized)")
+    else:
+        if not remote_status["remote_defined"]:
+            print(f"  Remote '{remote}' : missing (will be added)")
+        else:
+            fetch_state = "matches target" if remote_status["fetch_matches"] else "differs"
+            current_fetch = remote_status.get("fetch_url") or "<none>"
+            print(f"  Remote '{remote}' : present (fetch {fetch_state}, current: {current_fetch})")
+            print(
+                f"    - Push target GitHub : {'yes' if remote_status['has_github_push'] else 'no'}"
+            )
+            print(
+                f"    - Push target GitLab  : {'yes' if remote_status['has_gitlab_push'] else 'no'}"
+            )
+
+    if actions:
+        print("Pending actions:")
+        for action in actions:
+            print(f"  - {action}")
+    else:
+        print("Pending actions: none")
+        return False
+
+    if skip_prompt:
+        return True
+    answer = input("Proceed with these changes? [y/N]: ").strip().lower()
+    if answer not in {"y", "yes"}:
+        print("Aborting without making any changes.")
+        sys.exit(0)
+    return True
+
+
+def ensure_local_repo(repo_path: Path, branch: str) -> None:
+    if not (repo_path / ".git").exists():
+        print("Initializing new git repository.")
+        run_command(["git", "init"], cwd=repo_path)
+        run_command(["git", "symbolic-ref", "HEAD", f"refs/heads/{branch}"], cwd=repo_path)
+
+
+def github_repo_exists(slug: str) -> bool:
+    result = run_command(["gh", "repo", "view", slug], check=False)
+    return result.returncode == 0
+
+
+def gitlab_repo_exists(slug: str) -> bool:
+    result = run_command(["glab", "repo", "view", slug, "--output", "json"], check=False)
+    return result.returncode == 0
+
+
+def ensure_github_repo(slug: str, visibility: str, exists: Optional[bool] = None) -> None:
+    repo_exists = github_repo_exists(slug) if exists is None else exists
+    if repo_exists:
+        print(f"GitHub repository {slug} already exists.")
+        return
+    print(f"Creating GitHub repository {slug}.")
+    visibility_flag = "--private" if visibility == "private" else "--public"
+    run_command(["gh", "repo", "create", slug, visibility_flag])
+
+
+def ensure_gitlab_repo(
+    slug: str, visibility: str, branch: str, exists: Optional[bool] = None
+) -> None:
+    repo_exists = gitlab_repo_exists(slug) if exists is None else exists
+    if repo_exists:
+        print(f"GitLab repository {slug} already exists.")
+        return
+    print(f"Creating GitLab repository {slug}.")
+    visibility_flag = "-p" if visibility == "private" else "-P"
+    run_command(
+        [
+            "glab",
+            "repo",
+            "create",
+            slug,
+            visibility_flag,
+            "--defaultBranch",
+            branch,
+            "--skipGitInit",
+        ]
+    )
+
+
+def get_push_urls(repo_path: Path, remote: str) -> List[str]:
+    result = run_command(
+        ["git", "remote", "get-url", "--push", "--all", remote],
+        cwd=repo_path,
+        check=False,
+    )
+    if result.returncode != 0:
+        return []
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+
+
+def inspect_remote_state(
+    repo_path: Path,
+    remote: str,
+    github_url: str,
+    gitlab_url: str,
+    has_git_repo: bool,
+) -> dict:
+    state = {
+        "inspectable": has_git_repo,
+        "remote_defined": False,
+        "fetch_matches": False,
+        "has_github_push": False,
+        "has_gitlab_push": False,
+        "fetch_url": None,
+    }
+    if not has_git_repo:
+        return state
+
+    fetch_result = run_command(
+        ["git", "remote", "get-url", remote],
+        cwd=repo_path,
+        check=False,
+    )
+    if fetch_result.returncode == 0:
+        state["remote_defined"] = True
+        fetch_url = fetch_result.stdout.strip()
+        state["fetch_url"] = fetch_url
+        state["fetch_matches"] = fetch_url == github_url
+
+    push_urls = get_push_urls(repo_path, remote)
+    state["has_github_push"] = github_url in push_urls
+    state["has_gitlab_push"] = gitlab_url in push_urls
+    return state
+
+
+def ensure_remote_configuration(
+    repo_path: Path, remote: str, github_url: str, gitlab_url: str
+) -> None:
+    result = run_command(["git", "remote"], cwd=repo_path, check=False)
+    remotes = {line.strip() for line in result.stdout.splitlines() if line.strip()}
+    if remote not in remotes:
+        print(f"Adding git remote '{remote}' with fetch URL {github_url}.")
+        run_command(["git", "remote", "add", remote, github_url], cwd=repo_path)
+    else:
+        print(f"Setting fetch URL for remote '{remote}' to {github_url}.")
+        run_command(["git", "remote", "set-url", remote, github_url], cwd=repo_path)
+
+    existing_push_urls = get_push_urls(repo_path, remote)
+    if github_url not in existing_push_urls:
+        print(f"Ensuring GitHub push URL is set for remote '{remote}'.")
+        run_command(
+            ["git", "remote", "set-url", "--add", "--push", remote, github_url],
+            cwd=repo_path,
+        )
+    if gitlab_url not in existing_push_urls:
+        print(f"Ensuring GitLab push URL is set for remote '{remote}'.")
+        run_command(
+            ["git", "remote", "set-url", "--add", "--push", remote, gitlab_url],
+            cwd=repo_path,
+        )
+
+
+def main() -> None:
+    args = parse_args()
+    repo_path = Path(args.path).expanduser().resolve()
+    if not repo_path.exists():
+        print(f"Local path '{repo_path}' does not exist.", file=sys.stderr)
+        sys.exit(1)
+
+    repo_name = args.name or repo_path.name
+    namespace = args.namespace
+    slug = f"{namespace}/{repo_name}"
+    github_url = f"git@{GITHUB_HOST}:{slug}.git"
+    gitlab_url = f"git@{GITLAB_HOST}:{slug}.git"
+
+    for binary in ("git", "gh", "glab"):
+        ensure_cli_available(binary)
+
+    github_exists = github_repo_exists(slug)
+    gitlab_exists = gitlab_repo_exists(slug)
+    local_git_exists = (repo_path / ".git").exists()
+    remote_status = inspect_remote_state(
+        repo_path, args.remote, github_url, gitlab_url, local_git_exists
+    )
+
+    actions: List[str] = []
+    if not local_git_exists:
+        actions.append(
+            f"Initialize git repository in {repo_path} with default branch '{args.branch}'"
+        )
+    if not github_exists:
+        actions.append(f"Create GitHub repository {slug} ({args.visibility})")
+    if not gitlab_exists:
+        actions.append(f"Create GitLab repository {slug} ({args.visibility})")
+
+    if not remote_status["remote_defined"]:
+        actions.append(
+            f"Add remote '{args.remote}' pointing to {github_url} and configure pushes to both hosts"
+        )
+    else:
+        if not remote_status["fetch_matches"]:
+            actions.append(f"Set fetch URL for remote '{args.remote}' to {github_url}")
+        if not remote_status["has_github_push"]:
+            actions.append(f"Ensure remote '{args.remote}' pushes to GitHub")
+        if not remote_status["has_gitlab_push"]:
+            actions.append(f"Ensure remote '{args.remote}' pushes to GitLab")
+
+    should_continue = confirm_plan(
+        repo_name=repo_name,
+        repo_path=repo_path,
+        namespace=namespace,
+        visibility=args.visibility,
+        branch=args.branch,
+        remote=args.remote,
+        github_url=github_url,
+        gitlab_url=gitlab_url,
+        github_exists=github_exists,
+        gitlab_exists=gitlab_exists,
+        local_git_exists=local_git_exists,
+        remote_status=remote_status,
+        actions=actions,
+        skip_prompt=args.yes,
+    )
+
+    if not should_continue:
+        print("Everything already configured. Nothing to do.")
+        return
+
+    ensure_local_repo(repo_path, args.branch)
+    ensure_github_repo(slug, args.visibility, github_exists)
+    ensure_gitlab_repo(slug, args.visibility, args.branch, gitlab_exists)
+    ensure_remote_configuration(repo_path, args.remote, github_url, gitlab_url)
+    print("Repository configuration complete.")
+
+
+if __name__ == "__main__":
+    main()
