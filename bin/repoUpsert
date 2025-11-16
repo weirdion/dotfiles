@@ -53,10 +53,10 @@ def parse_args() -> argparse.Namespace:
         "-f",
         "--fetch-preference",
         choices=["gh", "github", "gl", "gitlab"],
-        default="github",
+        default="gitlab",
         help=(
             "Preferred remote host to use for the fetch URL when configuring the git remote "
-            "(default: github)"
+            "(default: gitlab)"
         ),
     )
     parser.add_argument(
