@@ -98,9 +98,7 @@ def run_command(
     return result
 
 
-def resolve_fetch_preference(
-    preference: str, github_url: str, gitlab_url: str
-) -> tuple[str, str]:
+def resolve_fetch_preference(preference: str, github_url: str, gitlab_url: str) -> tuple[str, str]:
     normalized = preference.lower()
     if normalized in {"gl", "gitlab"}:
         return gitlab_url, "GitLab"
@@ -327,9 +325,7 @@ def main() -> None:
     gitlab_exists = gitlab_repo_exists(slug)
     local_git_exists = (repo_path / ".git").exists()
     remote_status = inspect_remote_state(
-        repo_path, args.remote,
-        github_url, gitlab_url, local_git_exists,
-        fetch_url
+        repo_path, args.remote, github_url, gitlab_url, local_git_exists, fetch_url
     )
 
     actions: List[str] = []
